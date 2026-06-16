@@ -1,2011 +1,2049 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SKMP Project Management — Arduino & IoT Portal</title>
-  <meta name="description"
-    content="SKMP Project Management Portal specializes in developing innovative Arduino-based and IoT-based projects for academic and industrial applications." />
-  <meta name="keywords"
-    content="SKMP Project Management Portal, Arduino UNO projects, IoT projects, embedded systems, microcontroller projects" />
-  <meta name="author" content="Suzen Kumar Mohanty" />
-  <link rel="icon" href="SKMP_PROJECT_MANAGEMENT_LOGO-.png" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SKMP PROJECT MANAGEMENT — Arduino & IoT Portal</title>
+  <meta name="description" content="SKMP Project Management Portal specializes in developing innovative Arduino-based and IoT-based projects for academic and industrial applications."/>
+  <meta name="keywords" content="SKMP Project Management Portal, Arduino UNO projects, IoT projects, embedded systems, microcontroller projects"/>
+  <meta name="author" content="Suzen Kumar Mohanty"/>
+  <link rel="icon" href="SKMP_PROJECT_MANAGEMENT_LOGO-.png"/>
 
-  <!-- Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap"
-    rel="stylesheet" />
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
   <style>
     :root {
-      --black: #050a0f;
-      --dark: #080e14;
-      --panel: #0c1520;
-      --panel2: #101d2c;
-      --border: #1a3a5c;
-      --border-glow: #00aaff44;
-      --blue: #0096ff;
-      --blue2: #00c8ff;
-      --teal: #00e5cc;
-      --green: #00ff9f;
-      --orange: #ff6b2b;
-      --yellow: #ffd600;
-      --white: #e8f4ff;
-      --dim: #5a7a9a;
-      --gradient-main: linear-gradient(135deg, #0096ff, #00e5cc);
-      --gradient-warm: linear-gradient(135deg, #ff6b2b, #ffd600);
-      --font-mono: 'Share Tech Mono', monospace;
-      --font-ui: 'Exo 2', sans-serif;
-      --font-code: 'JetBrains Mono', monospace;
+      --bg:       #020609;
+      --bg2:      #070d12;
+      --panel:    #0a1520;
+      --panel2:   #0e1c2b;
+      --border:   #142535;
+      --border2:  #1e3a55;
+      --blue:     #00a8ff;
+      --blue2:    #00d4ff;
+      --teal:     #00ffd4;
+      --green:    #00ff88;
+      --orange:   #ff7c3a;
+      --yellow:   #ffd500;
+      --white:    #dff0ff;
+      --dim:      #4a6a85;
+      --dim2:     #2a4560;
+      --grad:     linear-gradient(135deg, #00a8ff 0%, #00ffd4 100%);
+      --grad-warm:linear-gradient(135deg, #ff7c3a 0%, #ffd500 100%);
+      --font-ui:  'Space Grotesk', sans-serif;
+      --font-mono:'Share Tech Mono', monospace;
+      --font-code:'JetBrains Mono', monospace;
+      --glow:     0 0 30px rgba(0,168,255,.18);
+      --glow2:    0 0 50px rgba(0,255,212,.25);
     }
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: var(--font-ui);
-      background: var(--black);
+      background: var(--bg);
       color: var(--white);
       overflow-x: hidden;
     }
 
-    /* ══════════════════════════════════════
-       SCROLLBAR
-    ══════════════════════════════════════ */
-    ::-webkit-scrollbar {
-      width: 6px;
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ─── SCAN LINES ─── */
+    body::before {
+      content:'';
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        rgba(0,168,255,.012) 3px, rgba(0,168,255,.012) 4px
+      );
     }
 
-    ::-webkit-scrollbar-track {
-      background: var(--dark);
-    }
+    /* ─── PCB CANVAS ─── */
+    #pcb { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.15; }
 
-    ::-webkit-scrollbar-thumb {
-      background: var(--blue);
-      border-radius: 3px;
-    }
-
-    /* ══════════════════════════════════════
-       CANVAS / PCB BACKGROUND
-    ══════════════════════════════════════ */
-    #pcb-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.18;
-    }
-
-    /* ══════════════════════════════════════
-       SCAN LINE OVERLAY
-    ══════════════════════════════════════ */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(0deg,
-          transparent,
-          transparent 2px,
-          rgba(0, 150, 255, 0.015) 2px,
-          rgba(0, 150, 255, 0.015) 4px);
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        NAVBAR
-    ══════════════════════════════════════ */
+    ═══════════════════════════════ */
     nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 500;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 5vw;
-      height: 70px;
-      background: rgba(5, 10, 15, 0.9);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      box-shadow: 0 0 30px rgba(0, 150, 255, 0.08);
+      position:fixed; top:0; left:0; right:0; z-index:900;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 5vw; height:68px;
+      background:rgba(2,6,9,.88);
+      backdrop-filter:blur(24px);
+      border-bottom:1px solid var(--border);
+      box-shadow:0 0 40px rgba(0,168,255,.06);
     }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .nav-logo-img {
-      height: 38px;
-      filter: drop-shadow(0 0 8px rgba(0, 150, 255, 0.6));
-    }
-
+    .nav-left { display:flex; align-items:center; gap:14px; }
+    .nav-logo { height:36px; filter:drop-shadow(0 0 8px rgba(0,168,255,.6)); }
     .nav-brand {
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      color: var(--blue2);
-      letter-spacing: 0.08em;
+      font-family:var(--font-mono);
+      font-size:.9rem; color:var(--blue2); letter-spacing:.08em;
     }
-
-    .nav-brand span {
-      color: var(--teal);
+    .nav-brand em { color:var(--teal); font-style:normal; }
+    .nav-pill {
+      display:flex; align-items:center; gap:6px;
+      font-family:var(--font-code); font-size:.68rem; color:var(--green);
+      background:rgba(0,255,136,.06);
+      border:1px solid rgba(0,255,136,.18);
+      padding:4px 11px; border-radius:4px; letter-spacing:.04em;
     }
+    .pulse { width:6px; height:6px; background:var(--green); border-radius:50%; animation:blink 1.4s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-    .nav-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-code);
-      font-size: 0.7rem;
-      color: var(--green);
-      background: rgba(0, 255, 159, 0.07);
-      border: 1px solid rgba(0, 255, 159, 0.2);
-      padding: 4px 10px;
-      border-radius: 4px;
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--green);
-      border-radius: 50%;
-      animation: blink 1.4s step-end infinite;
-    }
-
-    @keyframes blink {
-
-      0%,
-      100% {
-        opacity: 1
-      }
-
-      50% {
-        opacity: 0
-      }
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 0;
-      list-style: none;
-    }
-
+    .nav-links { display:flex; gap:2px; list-style:none; }
     .nav-links a {
-      display: block;
-      padding: 8px 20px;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--dim);
-      text-decoration: none;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      transition: all 0.2s;
+      display:block; padding:7px 18px;
+      font-family:var(--font-mono); font-size:.76rem;
+      color:var(--dim); text-decoration:none;
+      letter-spacing:.1em; text-transform:uppercase;
+      border:1px solid transparent; border-radius:4px;
+      transition:all .2s;
     }
-
-    .nav-links a:hover {
-      color: var(--blue2);
-      border-color: var(--border);
-      background: rgba(0, 150, 255, 0.06);
-      text-shadow: 0 0 12px var(--blue);
+    .nav-links a:hover { color:var(--blue2); border-color:var(--border2); background:rgba(0,168,255,.05); }
+    .nav-cta {
+      background:var(--grad) !important;
+      color:var(--bg) !important; font-weight:700 !important;
+      border-color:transparent !important;
+      box-shadow:0 0 20px rgba(0,168,255,.25);
     }
+    .nav-cta:hover { box-shadow:0 0 35px rgba(0,255,212,.45) !important; }
 
-    .nav-btn {
-      font-family: var(--font-mono) !important;
-      color: var(--black) !important;
-      background: var(--gradient-main) !important;
-      border-color: transparent !important;
-      font-size: 0.78rem !important;
-      box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+    /* hamburger */
+    .nav-ham { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:8px; }
+    .nav-ham span { display:block; width:24px; height:2px; background:var(--dim); border-radius:2px; transition:all .3s; }
+    .nav-ham.open span:nth-child(1){ transform:rotate(45deg) translate(5px,5px); }
+    .nav-ham.open span:nth-child(2){ opacity:0; }
+    .nav-ham.open span:nth-child(3){ transform:rotate(-45deg) translate(5px,-5px); }
+
+    .mobile-menu {
+      display:none; position:fixed; top:68px; left:0; right:0;
+      background:rgba(2,6,9,.97); backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+      padding:16px 5vw; z-index:899; flex-direction:column; gap:4px;
     }
-
-    .nav-btn:hover {
-      box-shadow: 0 0 30px rgba(0, 229, 204, 0.5) !important;
-      transform: none;
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a {
+      display:block; padding:12px 16px;
+      font-family:var(--font-mono); font-size:.8rem;
+      color:var(--dim); text-decoration:none;
+      letter-spacing:.1em; text-transform:uppercase;
+      border:1px solid transparent; border-radius:6px;
+      transition:all .2s;
     }
+    .mobile-menu a:hover { color:var(--blue2); border-color:var(--border2); background:rgba(0,168,255,.05); }
 
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        HERO
-    ══════════════════════════════════════ */
+    ═══════════════════════════════ */
     #hero {
-      position: relative;
-      z-index: 2;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      padding: 100px 6vw 60px;
+      position:relative; z-index:2;
+      min-height:100vh; display:flex; align-items:center;
+      padding:100px 6vw 60px;
+    }
+    .hero-wrap {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:56px; align-items:center;
+      max-width:1200px; margin:0 auto; width:100%;
     }
 
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
+    /* Terminal */
+    .terminal {
+      background:var(--panel);
+      border:1px solid var(--border2);
+      border-radius:12px; overflow:hidden;
+      box-shadow:var(--glow), inset 0 0 40px rgba(0,168,255,.02);
+      animation:fadeUp .8s ease both;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeRight { from{opacity:0;transform:translateX(32px)} to{opacity:1;transform:translateX(0)} }
+
+    .t-bar {
+      display:flex; align-items:center; gap:8px;
+      padding:10px 16px;
+      background:rgba(0,168,255,.04);
+      border-bottom:1px solid var(--border);
+    }
+    .td { width:12px; height:12px; border-radius:50%; }
+    .td-r{background:#ff5f57} .td-y{background:#ffbd2e} .td-g{background:#28ca40}
+    .t-title { font-family:var(--font-code); font-size:.7rem; color:var(--dim); margin-left:8px; }
+
+    .t-body {
+      padding:28px; font-family:var(--font-code); font-size:.83rem;
+      line-height:1.85; min-height:300px;
+    }
+    .t-cmt { color:#2e5a78; }
+    .t-kw  { color:var(--orange); }
+    .t-fn  { color:var(--blue2); }
+    .t-str { color:var(--green); }
+    .t-num { color:var(--yellow); }
+    .t-ty  { color:var(--teal); }
+    .t-var { color:var(--white); }
+    .t-ln  { display:block; margin-bottom:1px; }
+    .t-i   { padding-left:20px; }
+    .t-i2  { padding-left:40px; }
+    .t-cur {
+      display:inline-block; width:8px; height:15px;
+      background:var(--blue2); vertical-align:middle;
+      animation:blink 1s step-end infinite; margin-left:2px;
     }
 
-    /* Terminal window left */
-    .hero-terminal {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 0 50px rgba(0, 150, 255, 0.1), inset 0 0 30px rgba(0, 150, 255, 0.02);
-    }
-
-    .terminal-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: rgba(0, 150, 255, 0.06);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .t-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .t-dot-r {
-      background: #ff5f57;
-    }
-
-    .t-dot-y {
-      background: #ffbd2e;
-    }
-
-    .t-dot-g {
-      background: #28ca40;
-    }
-
-    .terminal-title {
-      font-family: var(--font-code);
-      font-size: 0.72rem;
-      color: var(--dim);
-      margin-left: 8px;
-    }
-
-    .terminal-body {
-      padding: 28px;
-      font-family: var(--font-code);
-      font-size: 0.85rem;
-      line-height: 1.8;
-      min-height: 320px;
-    }
-
-    .t-comment {
-      color: #3a6a8a;
-    }
-
-    .t-keyword {
-      color: var(--orange);
-    }
-
-    .t-func {
-      color: var(--blue2);
-    }
-
-    .t-string {
-      color: var(--green);
-    }
-
-    .t-num {
-      color: var(--yellow);
-    }
-
-    .t-type {
-      color: var(--teal);
-    }
-
-    .t-var {
-      color: var(--white);
-    }
-
-    .t-line {
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .t-cursor {
-      display: inline-block;
-      width: 8px;
-      height: 16px;
-      background: var(--blue2);
-      vertical-align: middle;
-      animation: blink 1s step-end infinite;
-      margin-left: 2px;
-    }
-
-    .t-indent {
-      padding-left: 20px;
-    }
-
-    .t-indent2 {
-      padding-left: 40px;
-    }
-
-    /* Hero right content */
-    .hero-right {}
-
+    /* Hero right */
+    .hero-right { animation:fadeRight .8s ease .2s both; }
     .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--teal);
-      border: 1px solid rgba(0, 229, 204, 0.3);
-      background: rgba(0, 229, 204, 0.06);
-      padding: 6px 14px;
-      border-radius: 4px;
-      margin-bottom: 24px;
-      letter-spacing: 0.08em;
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:var(--font-mono); font-size:.7rem; color:var(--teal);
+      border:1px solid rgba(0,255,212,.25);
+      background:rgba(0,255,212,.05);
+      padding:6px 14px; border-radius:4px;
+      margin-bottom:22px; letter-spacing:.08em;
     }
-
-    .hero-title {
-      font-family: var(--font-ui);
-      font-size: clamp(2.4rem, 4.5vw, 4rem);
-      font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 20px;
+    .hero-h1 {
+      font-size:clamp(2.2rem,4.2vw,3.8rem);
+      font-weight:700; line-height:1.1;
+      letter-spacing:-.03em; margin-bottom:18px;
     }
-
-    .hero-title .line1 {
-      display: block;
-      color: var(--white);
+    .hero-h1 .l1 { display:block; color:var(--white); }
+    .hero-h1 .l2 {
+      display:block;
+      background:var(--grad); -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
     }
+    .hero-desc { font-size:.93rem; color:var(--dim); line-height:1.8; margin-bottom:32px; max-width:420px; }
 
-    .hero-title .line2 {
-      display: block;
-      background: var(--gradient-main);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .hero-ctas { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:44px; }
+    .btn-main {
+      display:inline-flex; align-items:center; gap:9px;
+      background:var(--grad); color:var(--bg);
+      font-family:var(--font-mono); font-size:.8rem; font-weight:700;
+      letter-spacing:.06em; padding:13px 26px; border-radius:5px;
+      text-decoration:none;
+      box-shadow:0 0 28px rgba(0,168,255,.28);
+      transition:box-shadow .3s, transform .2s;
     }
-
-    .hero-desc {
-      font-size: 0.95rem;
-      color: var(--dim);
-      line-height: 1.8;
-      margin-bottom: 36px;
-      max-width: 420px;
+    .btn-main:hover { box-shadow:0 0 48px rgba(0,255,212,.5); transform:translateY(-2px); }
+    .btn-ghost {
+      display:inline-flex; align-items:center; gap:9px;
+      background:transparent; color:var(--blue2);
+      font-family:var(--font-mono); font-size:.8rem;
+      letter-spacing:.06em; padding:13px 26px;
+      border-radius:5px; border:1px solid var(--border2);
+      text-decoration:none; transition:all .2s;
     }
+    .btn-ghost:hover { border-color:var(--blue); background:rgba(0,168,255,.06); }
 
-    .hero-ctas {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-bottom: 48px;
+    .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .metric {
+      background:var(--panel); border:1px solid var(--border);
+      border-radius:8px; padding:16px; text-align:center;
+      position:relative; overflow:hidden;
     }
-
-    .cta-main {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--gradient-main);
-      color: var(--black);
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      padding: 14px 28px;
-      border-radius: 4px;
-      text-decoration: none;
-      box-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
-      transition: box-shadow 0.3s, transform 0.2s;
+    .metric::after {
+      content:''; position:absolute; top:0; left:0; right:0;
+      height:2px; background:var(--grad);
     }
+    .metric-n { font-family:var(--font-mono); font-size:1.5rem; font-weight:700; color:var(--blue2); text-shadow:0 0 18px var(--blue); }
+    .metric-l { font-size:.68rem; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
 
-    .cta-main:hover {
-      box-shadow: 0 0 50px rgba(0, 229, 204, 0.5);
-      transform: translateY(-2px);
-    }
-
-    .cta-ghost {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: transparent;
-      color: var(--blue2);
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      letter-spacing: 0.06em;
-      padding: 14px 28px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      text-decoration: none;
-      transition: border-color 0.3s, background 0.3s;
-    }
-
-    .cta-ghost:hover {
-      border-color: var(--blue);
-      background: rgba(0, 150, 255, 0.06);
-    }
-
-    .hero-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .metric-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .metric-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--gradient-main);
-    }
-
-    .metric-num {
-      font-family: var(--font-mono);
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--blue2);
-      text-shadow: 0 0 20px var(--blue);
-    }
-
-    .metric-label {
-      font-size: 0.7rem;
-      color: var(--dim);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        SECTION COMMONS
-    ══════════════════════════════════════ */
-    .section-wrap {
-      position: relative;
-      z-index: 2;
-      padding: 100px 6vw;
-    }
+    ═══════════════════════════════ */
+    .section { position:relative; z-index:2; padding:96px 6vw; }
+    .section:nth-child(even) { background:rgba(7,13,18,.7); }
 
-    .section-wrap:nth-child(even) {
-      background: rgba(8, 14, 20, 0.8);
-    }
-
-    .section-header {
-      margin-bottom: 60px;
-    }
-
+    .sec-inner { max-width:1200px; margin:0 auto; }
+    .sec-hd { margin-bottom:56px; }
     .sec-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--teal);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:var(--font-mono); font-size:.68rem;
+      color:var(--teal); letter-spacing:.12em; text-transform:uppercase;
+      margin-bottom:10px;
     }
-
-    .sec-tag::before {
-      content: '';
-      width: 20px;
-      height: 1px;
-      background: var(--teal);
-    }
-
+    .sec-tag::before { content:''; width:18px; height:1px; background:var(--teal); }
     .sec-title {
-      font-family: var(--font-ui);
-      font-size: clamp(1.7rem, 3vw, 2.6rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
+      font-size:clamp(1.6rem,2.8vw,2.5rem);
+      font-weight:700; letter-spacing:-.025em; line-height:1.2;
     }
+    .sec-title span { background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .sec-div { width:56px; height:3px; background:var(--grad); border-radius:2px; margin:14px 0 18px; }
+    .sec-sub { font-size:.92rem; color:var(--dim); line-height:1.75; max-width:500px; }
 
-    .sec-title span {
-      background: var(--gradient-main);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .sec-divider {
-      width: 60px;
-      height: 3px;
-      background: var(--gradient-main);
-      border-radius: 2px;
-      margin: 16px 0 20px;
-    }
-
-    .sec-sub {
-      font-size: 0.95rem;
-      color: var(--dim);
-      line-height: 1.7;
-      max-width: 520px;
-    }
-
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        ABOUT
-    ══════════════════════════════════════ */
-    #about {
-      background: var(--panel);
+    ═══════════════════════════════ */
+    #about { background:var(--panel); }
+    .about-grid { display:grid; grid-template-columns:360px 1fr; gap:64px; align-items:start; }
+    .about-left { display:flex; flex-direction:column; gap:18px; }
+
+    .profile-img {
+      position:relative; border:1px solid var(--border2);
+      border-radius:10px; overflow:hidden;
+      box-shadow:0 0 40px rgba(0,168,255,.1);
+    }
+    .profile-img img { width:100%; height:260px; object-fit:cover; display:block; filter:saturate(.9) brightness(.92); }
+    .profile-img .ov { position:absolute; inset:0; background:linear-gradient(180deg,transparent 50%,rgba(2,6,9,.92) 100%); }
+    .profile-img .lbl { position:absolute; bottom:14px; left:14px; font-family:var(--font-mono); font-size:.7rem; color:var(--teal); }
+    .c-tl,.c-tr,.c-bl,.c-br { position:absolute; width:14px; height:14px; border-color:var(--blue); border-style:solid; }
+    .c-tl{top:8px;left:8px;border-width:2px 0 0 2px}
+    .c-tr{top:8px;right:8px;border-width:2px 2px 0 0}
+    .c-bl{bottom:8px;left:8px;border-width:0 0 2px 2px}
+    .c-br{bottom:8px;right:8px;border-width:0 2px 2px 0}
+
+    .profile-card {
+      background:var(--panel2); border:1px solid var(--border);
+      border-radius:10px; padding:22px;
+    }
+    .profile-head { display:flex; align-items:center; gap:13px; margin-bottom:18px; }
+    .avatar {
+      width:50px; height:50px; border-radius:8px;
+      background:var(--grad); display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-mono); font-size:1rem; font-weight:700;
+      color:var(--bg); flex-shrink:0;
+    }
+    .profile-name { font-size:.95rem; font-weight:600; color:var(--white); }
+    .profile-role { font-family:var(--font-mono); font-size:.7rem; color:var(--teal); margin-top:2px; }
+
+    .skills { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:18px; }
+    .sk {
+      font-family:var(--font-mono); font-size:.68rem;
+      padding:4px 10px; border-radius:3px;
+      border:1px solid var(--border2); color:var(--blue2);
+      background:rgba(0,168,255,.05); letter-spacing:.04em;
     }
 
-    .about-layout {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 70px;
-      align-items: start;
-      max-width: 1200px;
-      margin: 0 auto;
+    .socials { display:flex; gap:9px; margin-bottom:16px; }
+    .soc {
+      width:35px; height:35px; border-radius:6px;
+      border:1px solid var(--border); display:flex; align-items:center;
+      justify-content:center; color:var(--dim); text-decoration:none;
+      font-size:.88rem; transition:all .2s;
     }
+    .soc:hover { color:var(--blue2); border-color:var(--blue2); background:rgba(0,168,255,.07); box-shadow:0 0 10px rgba(0,168,255,.18); }
 
-    .about-card-col {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+    .port-btn {
+      display:flex; align-items:center; justify-content:center; gap:9px;
+      background:var(--grad); color:var(--bg);
+      font-family:var(--font-mono); font-size:.76rem; font-weight:700;
+      padding:11px; border-radius:6px; text-decoration:none;
+      letter-spacing:.05em; box-shadow:0 0 18px rgba(0,168,255,.18);
+      transition:box-shadow .3s;
     }
+    .port-btn:hover { box-shadow:0 0 32px rgba(0,255,212,.38); }
 
-    /* Profile image with PCB border */
-    .profile-img-wrap {
-      position: relative;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 0 40px rgba(0, 150, 255, 0.12);
+    .about-desc { font-size:.92rem; color:var(--dim); line-height:1.8; margin-bottom:28px; }
+    .about-desc strong { color:var(--white); font-weight:500; }
+
+    .strengths { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .str-card {
+      background:var(--panel2); border:1px solid var(--border);
+      border-left:3px solid var(--blue); border-radius:8px;
+      padding:15px 16px; transition:all .2s;
     }
+    .str-card:hover { border-left-color:var(--teal); box-shadow:0 0 18px rgba(0,255,212,.08); transform:translateX(3px); }
+    .str-t { font-family:var(--font-mono); font-size:.7rem; color:var(--teal); letter-spacing:.05em; margin-bottom:5px; }
+    .str-d { font-size:.8rem; color:var(--dim); line-height:1.6; }
 
-    .profile-img-wrap img {
-      width: 100%;
-      height: 260px;
-      object-fit: cover;
-      display: block;
-      filter: saturate(0.9) brightness(0.95);
-    }
-
-    .profile-img-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, transparent 50%, rgba(5, 10, 15, 0.9) 100%);
-    }
-
-    .profile-img-label {
-      position: absolute;
-      bottom: 14px;
-      left: 14px;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--teal);
-    }
-
-    .corner-tl,
-    .corner-tr,
-    .corner-bl,
-    .corner-br {
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      border-color: var(--blue);
-      border-style: solid;
-    }
-
-    .corner-tl {
-      top: 8px;
-      left: 8px;
-      border-width: 2px 0 0 2px;
-    }
-
-    .corner-tr {
-      top: 8px;
-      right: 8px;
-      border-width: 2px 2px 0 0;
-    }
-
-    .corner-bl {
-      bottom: 8px;
-      left: 8px;
-      border-width: 0 0 2px 2px;
-    }
-
-    .corner-br {
-      bottom: 8px;
-      right: 8px;
-      border-width: 0 2px 2px 0;
-    }
-
-    /* Profile info card */
-    .profile-info-card {
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 24px;
-    }
-
-    .profile-info-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-
-    .profile-avatar-small {
-      width: 52px;
-      height: 52px;
-      border-radius: 8px;
-      background: var(--gradient-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--black);
-      flex-shrink: 0;
-    }
-
-    .profile-name-mono {
-      font-family: var(--font-ui);
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--white);
-    }
-
-    .profile-role-mono {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--teal);
-      margin-top: 2px;
-    }
-
-    .skill-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    .skill-tag {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      padding: 4px 10px;
-      border-radius: 3px;
-      border: 1px solid var(--border);
-      color: var(--blue2);
-      background: rgba(0, 150, 255, 0.06);
-      letter-spacing: 0.04em;
-    }
-
-    .social-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .soc-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--dim);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-
-    .soc-btn:hover {
-      color: var(--blue2);
-      border-color: var(--blue);
-      background: rgba(0, 150, 255, 0.08);
-      box-shadow: 0 0 12px rgba(0, 150, 255, 0.2);
-    }
-
-    .portfolio-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: var(--gradient-main);
-      color: var(--black);
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 700;
-      padding: 12px;
-      border-radius: 6px;
-      text-decoration: none;
-      letter-spacing: 0.05em;
-      box-shadow: 0 0 20px rgba(0, 150, 255, 0.2);
-      transition: box-shadow 0.3s;
-    }
-
-    .portfolio-btn:hover {
-      box-shadow: 0 0 35px rgba(0, 229, 204, 0.4);
-    }
-
-    /* About text col */
-    .about-text-col {}
-
-    .about-desc {
-      font-size: 0.95rem;
-      color: var(--dim);
-      line-height: 1.8;
-      margin-bottom: 32px;
-    }
-
-    .about-desc strong {
-      color: var(--white);
-    }
-
-    .strength-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .strength-card {
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--blue);
-      border-radius: 8px;
-      padding: 16px 18px;
-      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-    }
-
-    .strength-card:hover {
-      border-left-color: var(--teal);
-      box-shadow: 0 0 20px rgba(0, 229, 204, 0.1);
-      transform: translateX(4px);
-    }
-
-    .strength-card-title {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--teal);
-      letter-spacing: 0.06em;
-      margin-bottom: 6px;
-    }
-
-    .strength-card-desc {
-      font-size: 0.83rem;
-      color: var(--dim);
-      line-height: 1.6;
-    }
-
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        PROJECTS
-    ══════════════════════════════════════ */
-    #projects {
-      background: var(--dark);
-    }
-
-    .projects-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .projects-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
-    }
+    ═══════════════════════════════ */
+    #projects { background:var(--bg2); }
+    .proj-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
 
     .proj-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      transition: transform 0.3s, box-shadow 0.3s;
-      position: relative;
+      background:var(--panel); border:1px solid var(--border);
+      border-radius:12px; overflow:hidden;
+      transition:transform .3s, box-shadow .3s;
+      position:relative; display:flex; flex-direction:column;
     }
-
     .proj-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--gradient-main);
-      opacity: 0;
-      transition: opacity 0.3s;
+      content:''; position:absolute; top:0; left:0; right:0;
+      height:2px; background:var(--grad); opacity:0; transition:opacity .3s;
+    }
+    .proj-card:hover { transform:translateY(-5px); box-shadow:0 18px 55px rgba(0,168,255,.14), 0 0 0 1px rgba(0,168,255,.12); }
+    .proj-card:hover::before { opacity:1; }
+
+    /* Image wrap */
+    .proj-img {
+      position:relative; height:210px; overflow:hidden;
+      background:#050d14; cursor:pointer;
+    }
+    .proj-img img, .proj-img .ph-img {
+      width:100%; height:100%; object-fit:cover; display:block;
+      transition:transform .5s; filter:brightness(.82) saturate(1.1);
+    }
+    .proj-card:hover .proj-img img,
+    .proj-card:hover .proj-img .ph-img { transform:scale(1.06); }
+
+    .proj-img .ov {
+      position:absolute; inset:0;
+      background:linear-gradient(180deg,rgba(0,168,255,.07) 0%,rgba(2,6,9,.82) 100%);
+      transition:background .25s;
+    }
+    .proj-card:hover .proj-img .ov { background:linear-gradient(180deg,rgba(0,168,255,.05) 0%,rgba(2,6,9,.6) 100%); }
+
+    .proj-num {
+      position:absolute; top:12px; left:12px;
+      font-family:var(--font-mono); font-size:.66rem; font-weight:700;
+      color:var(--bg); background:var(--grad);
+      padding:4px 10px; border-radius:3px; letter-spacing:.06em; z-index:2;
     }
 
-    .proj-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 60px rgba(0, 150, 255, 0.15), 0 0 0 1px rgba(0, 150, 255, 0.15);
+    /* Play button */
+    .play-wrap {
+      position:absolute; inset:0; display:flex; align-items:center;
+      justify-content:center; z-index:3;
+    }
+    .play-circle {
+      width:54px; height:54px; border-radius:50%;
+      background:rgba(0,168,255,.15);
+      border:2px solid rgba(0,168,255,.55);
+      display:flex; align-items:center; justify-content:center;
+      backdrop-filter:blur(6px);
+      transition:all .2s;
+    }
+    .play-circle i { color:var(--blue2); font-size:19px; margin-left:3px; }
+    .proj-card:hover .play-circle { background:rgba(0,168,255,.28); border-color:var(--blue2); transform:scale(1.08); }
+
+    /* No-video indicator */
+    .no-vid {
+      position:absolute; bottom:10px; right:10px;
+      background:rgba(0,0,0,.55); color:var(--dim);
+      font-size:.68rem; padding:3px 8px; border-radius:4px; z-index:3;
+      letter-spacing:.05em;
     }
 
-    .proj-card:hover::before {
-      opacity: 1;
+    /* Placeholder background */
+    .proj-ph {
+      width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg, #0a1520 0%, #0e1c2b 100%);
     }
+    .proj-ph i { font-size:3rem; color:var(--border2); }
 
-    /* Project image — PRESERVED */
-    .proj-img-wrap {
-      position: relative;
-      height: 220px;
-      overflow: hidden;
+    /* Body */
+    .proj-body { padding:22px; display:flex; flex-direction:column; gap:10px; flex:1; }
+    .proj-title { font-family:var(--font-ui); font-size:1rem; font-weight:600; color:var(--white); line-height:1.3; }
+    .proj-desc { font-size:.81rem; color:var(--dim); line-height:1.68; flex:1; }
+    .proj-comp {
+      font-family:var(--font-code); font-size:.7rem;
+      color:rgba(0,255,212,.65); background:rgba(0,255,212,.04);
+      border:1px solid rgba(0,255,212,.12);
+      border-radius:4px; padding:8px 11px; line-height:1.6;
     }
+    .comp-lbl { color:var(--orange); margin-right:4px; font-weight:500; }
+    .proj-actions { display:flex; gap:9px; flex-wrap:wrap; margin-top:4px; }
 
-    .proj-img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.5s;
-      filter: brightness(0.85) saturate(1.1);
+    .pbtn {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:7px 14px; border-radius:5px; font-family:var(--font-mono);
+      font-size:.7rem; letter-spacing:.04em; text-decoration:none;
+      cursor:pointer; border:none; transition:all .2s;
     }
-
-    .proj-card:hover .proj-img-wrap img {
-      transform: scale(1.05);
+    .pbtn-primary {
+      background:rgba(0,168,255,.1); color:var(--blue2);
+      border:1px solid rgba(0,168,255,.28);
     }
-
-    .proj-img-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0, 150, 255, 0.08) 0%, rgba(5, 10, 15, 0.85) 100%);
+    .pbtn-primary:hover { background:rgba(0,168,255,.2); border-color:var(--blue2); }
+    .pbtn-video {
+      background:rgba(0,255,212,.07); color:var(--teal);
+      border:1px solid rgba(0,255,212,.22);
     }
+    .pbtn-video:hover { background:rgba(0,255,212,.16); border-color:var(--teal); }
 
-    .proj-num-badge {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      color: var(--black);
-      background: var(--gradient-main);
-      padding: 4px 10px;
-      border-radius: 3px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+    /* ═══════════════════════════════
+       VIDEO MODAL
+    ═══════════════════════════════ */
+    .vmodal {
+      display:none; position:fixed; inset:0; z-index:9999;
+      background:rgba(0,0,0,.92); backdrop-filter:blur(10px);
+      align-items:center; justify-content:center; padding:20px;
     }
-
-    .proj-body {
-      padding: 24px;
+    .vmodal.open { display:flex; animation:fadeIn .2s ease; }
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    .vmodal-inner {
+      width:100%; max-width:880px;
+      animation:slideUp .25s ease;
     }
-
-    .proj-title {
-      font-family: var(--font-ui);
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--white);
-      margin-bottom: 10px;
+    @keyframes slideUp{from{transform:translateY(22px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .vmodal-head {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:12px;
     }
-
-    .proj-desc {
-      font-size: 0.83rem;
-      color: var(--dim);
-      line-height: 1.65;
-      margin-bottom: 14px;
+    .vmodal-title {
+      font-family:var(--font-ui); font-size:.88rem; font-weight:600;
+      color:var(--white); max-width:80%; white-space:nowrap;
+      overflow:hidden; text-overflow:ellipsis;
     }
-
-    .proj-gadgets {
-      font-family: var(--font-code);
-      font-size: 0.72rem;
-      color: rgba(0, 229, 204, 0.7);
-      background: rgba(0, 229, 204, 0.05);
-      border: 1px solid rgba(0, 229, 204, 0.15);
-      border-radius: 4px;
-      padding: 8px 12px;
-      margin-bottom: 18px;
-      line-height: 1.6;
+    .vmodal-close {
+      width:36px; height:36px; border-radius:50%;
+      background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
+      color:var(--white); display:flex; align-items:center;
+      justify-content:center; cursor:pointer; font-size:.9rem;
+      transition:background .2s; flex-shrink:0;
     }
-
-    .gadgets-label {
-      color: var(--orange);
-      margin-right: 4px;
+    .vmodal-close:hover { background:rgba(255,255,255,.14); }
+    .vmodal-box {
+      background:#000; border-radius:10px; overflow:hidden;
+      aspect-ratio:16/9; border:1px solid var(--border);
     }
-
-    .proj-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+    .vmodal-box iframe, .vmodal-box video { width:100%; height:100%; display:block; border:none; }
+    .no-video-inner {
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:12px; height:100%;
+      color:var(--dim);
     }
+    .no-video-inner i { font-size:2.5rem; opacity:.4; }
+    .no-video-inner p { font-size:.85rem; opacity:.55; }
 
-    .proj-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      padding: 8px 16px;
-      border-radius: 4px;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .proj-btn-primary {
-      background: var(--gradient-main);
-      color: var(--black);
-      font-weight: 700;
-      box-shadow: 0 0 16px rgba(0, 150, 255, 0.2);
-    }
-
-    .proj-btn-primary:hover {
-      box-shadow: 0 0 28px rgba(0, 229, 204, 0.4);
-    }
-
-    .proj-btn-ghost {
-      background: transparent;
-      color: var(--blue2);
-      border: 1px solid var(--border);
-    }
-
-    .proj-btn-ghost:hover {
-      border-color: var(--blue2);
-      background: rgba(0, 150, 255, 0.06);
-    }
-
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        NOTICE
-    ══════════════════════════════════════ */
-    #notice {
-      background: var(--panel);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
+    ═══════════════════════════════ */
+    #notice { background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .notice-box {
+      max-width:1100px; margin:0 auto;
+      background:rgba(255,124,58,.03);
+      border:1px solid rgba(255,124,58,.22);
+      border-radius:12px; padding:36px 40px;
     }
-
-    .notice-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      background: rgba(255, 107, 43, 0.04);
-      border: 1px solid rgba(255, 107, 43, 0.25);
-      border-radius: 12px;
-      padding: 36px 40px;
+    .notice-head { display:flex; align-items:center; gap:13px; margin-bottom:24px; }
+    .notice-icon {
+      width:42px; height:42px;
+      background:rgba(255,124,58,.08);
+      border:1px solid rgba(255,124,58,.28);
+      border-radius:8px; display:flex; align-items:center;
+      justify-content:center; font-size:1.1rem; flex-shrink:0;
     }
-
-    .notice-head {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 24px;
-    }
-
-    .notice-icon-box {
-      width: 44px;
-      height: 44px;
-      background: rgba(255, 107, 43, 0.1);
-      border: 1px solid rgba(255, 107, 43, 0.3);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-    }
-
-    .notice-title {
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      color: var(--orange);
-      letter-spacing: 0.06em;
-    }
-
-    .notice-subtitle {
-      font-family: var(--font-code);
-      font-size: 0.7rem;
-      color: rgba(255, 107, 43, 0.5);
-      margin-top: 2px;
-    }
-
-    .notice-layout {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 40px;
-      align-items: start;
-    }
-
-    .notice-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
+    .notice-ttl { font-family:var(--font-mono); font-size:.92rem; color:var(--orange); letter-spacing:.06em; }
+    .notice-sub { font-family:var(--font-code); font-size:.68rem; color:rgba(255,124,58,.5); margin-top:2px; }
+    .notice-layout { display:grid; grid-template-columns:1fr auto; gap:40px; align-items:start; }
+    .notice-list { list-style:none; display:flex; flex-direction:column; gap:9px; }
     .notice-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 0.85rem;
-      color: rgba(232, 244, 255, 0.7);
-      line-height: 1.6;
+      display:flex; align-items:flex-start; gap:10px;
+      font-size:.83rem; color:rgba(223,240,255,.68); line-height:1.6;
     }
-
-    .notice-list li::before {
-      content: '›';
-      color: var(--orange);
-      font-size: 1rem;
-      flex-shrink: 0;
-      margin-top: 1px;
+    .notice-list li::before { content:'›'; color:var(--orange); font-size:.95rem; flex-shrink:0; margin-top:1px; }
+    .notice-imgs { display:flex; flex-direction:column; gap:11px; }
+    .notice-imgs img {
+      width:155px; height:118px; object-fit:cover;
+      border-radius:8px; border:1px solid var(--border);
+      box-shadow:0 0 18px rgba(0,168,255,.08);
+      filter:brightness(.88) saturate(1.1);
+      transition:box-shadow .3s;
     }
+    .notice-imgs img:hover { box-shadow:0 0 26px rgba(0,255,212,.18); }
 
-    /* NOTICE IMAGES — PRESERVED */
-    .notice-images {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .notice-images img {
-      width: 160px;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      box-shadow: 0 0 20px rgba(0, 150, 255, 0.1);
-      filter: brightness(0.9) saturate(1.1);
-      transition: box-shadow 0.3s;
-    }
-
-    .notice-images img:hover {
-      box-shadow: 0 0 30px rgba(0, 229, 204, 0.2);
-    }
-
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        CONTACT
-    ══════════════════════════════════════ */
-    #contact {
-      background: var(--dark);
-    }
+    ═══════════════════════════════ */
+    #contact { background:var(--bg2); }
+    .contact-grid { display:grid; grid-template-columns:1fr 1.35fr; gap:64px; max-width:1100px; margin:0 auto; align-items:start; }
 
-    .contact-inner {
-      display: grid;
-      grid-template-columns: 1fr 1.4fr;
-      gap: 70px;
-      max-width: 1100px;
-      margin: 0 auto;
-      align-items: start;
-    }
-
-    .contact-info {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-top: 40px;
-    }
-
+    .info-cards { display:flex; flex-direction:column; gap:12px; margin-top:36px; }
     .info-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 16px 18px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      transition: border-color 0.2s;
+      display:flex; align-items:flex-start; gap:13px;
+      padding:15px 17px; background:var(--panel);
+      border:1px solid var(--border); border-radius:8px; transition:border-color .2s;
+    }
+    .info-row:hover { border-color:var(--blue2); }
+    .info-icon {
+      width:38px; height:38px; border-radius:7px;
+      background:var(--grad); display:flex; align-items:center;
+      justify-content:center; color:var(--bg); font-size:.88rem; flex-shrink:0;
+    }
+    .info-lbl { font-family:var(--font-mono); font-size:.66rem; color:var(--dim); letter-spacing:.08em; text-transform:uppercase; }
+    .info-val { font-size:.84rem; color:var(--white); margin-top:3px; }
+    .avail {
+      display:flex; align-items:center; gap:8px;
+      font-family:var(--font-mono); font-size:.68rem; color:var(--green);
+      background:rgba(0,255,136,.05); border:1px solid rgba(0,255,136,.16);
+      padding:9px 15px; border-radius:6px;
     }
 
-    .info-row:hover {
-      border-color: var(--blue);
-    }
-
-    .info-row-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
-      background: var(--gradient-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--black);
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
-
-    .info-row-label {
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      color: var(--dim);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .info-row-val {
-      font-size: 0.85rem;
-      color: var(--white);
-      margin-top: 3px;
-    }
-
-    .hours-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--green);
-      background: rgba(0, 255, 159, 0.06);
-      border: 1px solid rgba(0, 255, 159, 0.18);
-      padding: 10px 16px;
-      border-radius: 6px;
-    }
-
-    /* Contact form */
+    /* Form */
     .form-panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 0 40px rgba(0, 150, 255, 0.06);
+      background:var(--panel); border:1px solid var(--border);
+      border-radius:12px; overflow:hidden;
+      box-shadow:0 0 36px rgba(0,168,255,.05);
     }
-
-    .form-panel-header {
-      padding: 16px 24px;
-      background: rgba(0, 150, 255, 0.04);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--dim);
+    .form-head {
+      padding:15px 22px; background:rgba(0,168,255,.03);
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:9px;
+      font-family:var(--font-mono); font-size:.73rem; color:var(--dim);
     }
-
-    .form-panel-header i {
-      color: var(--teal);
+    .form-head i { color:var(--teal); }
+    .form-body { padding:30px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+    .form-grp { margin-bottom:16px; }
+    .form-lbl {
+      display:block; font-family:var(--font-mono); font-size:.66rem;
+      color:var(--dim); letter-spacing:.1em; text-transform:uppercase; margin-bottom:7px;
     }
-
-    .form-body {
-      padding: 32px;
+    .form-in, .form-ta {
+      width:100%; padding:11px 14px;
+      background:var(--panel2); border:1px solid var(--border);
+      border-radius:6px; color:var(--white);
+      font-family:var(--font-ui); font-size:.86rem;
+      outline:none; transition:all .2s;
     }
-
-    .form-row-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+    .form-in::placeholder, .form-ta::placeholder { color:rgba(74,106,133,.6); }
+    .form-in:focus, .form-ta:focus {
+      border-color:var(--blue); background:rgba(0,168,255,.03);
+      box-shadow:0 0 0 3px rgba(0,168,255,.09);
     }
-
-    .form-group {
-      margin-bottom: 18px;
+    .form-ta { resize:vertical; min-height:108px; }
+    .form-note { font-family:var(--font-code); font-size:.66rem; color:var(--dim); margin-bottom:14px; }
+    .form-note span { color:var(--orange); }
+    .submit {
+      width:100%; padding:14px;
+      background:var(--grad); color:var(--bg);
+      border:none; border-radius:6px;
+      font-family:var(--font-mono); font-size:.8rem; font-weight:700;
+      letter-spacing:.06em; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:9px;
+      box-shadow:0 0 22px rgba(0,168,255,.22);
+      transition:box-shadow .3s, transform .2s;
     }
+    .submit:hover { box-shadow:0 0 38px rgba(0,255,212,.42); transform:translateY(-1px); }
 
-    .form-label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 0.68rem;
-      color: var(--dim);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .form-input,
-    .form-textarea {
-      width: 100%;
-      padding: 12px 16px;
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--white);
-      font-family: var(--font-ui);
-      font-size: 0.88rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    }
-
-    .form-input::placeholder,
-    .form-textarea::placeholder {
-      color: rgba(90, 122, 154, 0.6);
-    }
-
-    .form-input:focus,
-    .form-textarea:focus {
-      border-color: var(--blue);
-      background: rgba(0, 150, 255, 0.04);
-      box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.1);
-    }
-
-    .form-textarea {
-      resize: vertical;
-      min-height: 110px;
-    }
-
-    .form-note {
-      font-family: var(--font-code);
-      font-size: 0.68rem;
-      color: var(--dim);
-      margin-bottom: 16px;
-    }
-
-    .form-note span {
-      color: var(--orange);
-    }
-
-    .submit-btn {
-      width: 100%;
-      padding: 15px;
-      background: var(--gradient-main);
-      color: var(--black);
-      border: none;
-      border-radius: 6px;
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 0 24px rgba(0, 150, 255, 0.25);
-      transition: box-shadow 0.3s, transform 0.2s;
-    }
-
-    .submit-btn:hover {
-      box-shadow: 0 0 40px rgba(0, 229, 204, 0.45);
-      transform: translateY(-1px);
-    }
-
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        FOOTER
-    ══════════════════════════════════════ */
+    ═══════════════════════════════ */
     footer {
-      position: relative;
-      z-index: 2;
-      background: var(--panel);
-      border-top: 1px solid var(--border);
-      padding: 40px 6vw;
+      position:relative; z-index:2;
+      background:var(--panel); border-top:1px solid var(--border);
+      padding:38px 6vw;
     }
-
-    .footer-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      text-align: center;
+    .footer-in {
+      max-width:1200px; margin:0 auto;
+      display:flex; flex-direction:column;
+      align-items:center; gap:18px; text-align:center;
     }
-
-    .footer-logo-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .footer-logo { display:flex; align-items:center; gap:11px; }
+    .footer-logo img { height:32px; filter:drop-shadow(0 0 7px rgba(0,168,255,.5)); }
+    .footer-brand { font-family:var(--font-mono); font-size:.88rem; color:var(--blue2); }
+    .footer-links { display:flex; gap:22px; }
+    .footer-links a { font-family:var(--font-mono); font-size:.7rem; color:var(--dim); text-decoration:none; letter-spacing:.06em; transition:color .2s; }
+    .footer-links a:hover { color:var(--blue2); }
+    .footer-soc { display:flex; gap:9px; }
+    .footer-soc a {
+      width:34px; height:34px; border-radius:6px;
+      border:1px solid var(--border); display:flex; align-items:center;
+      justify-content:center; color:var(--dim); font-size:.82rem;
+      text-decoration:none; transition:all .2s;
     }
+    .footer-soc a:hover { color:var(--blue2); border-color:var(--blue); box-shadow:0 0 10px rgba(0,168,255,.18); }
+    .footer-copy { font-family:var(--font-code); font-size:.7rem; color:rgba(74,106,133,.58); }
+    .footer-copy a { color:var(--teal); text-decoration:none; }
 
-    .footer-logo-row img {
-      height: 34px;
-      filter: drop-shadow(0 0 8px rgba(0, 150, 255, 0.5));
+    /* WhatsApp float */
+    .wa {
+      position:fixed; bottom:26px; right:26px;
+      width:52px; height:52px; background:#25d366;
+      border-radius:50%; display:flex; align-items:center;
+      justify-content:center; color:#fff; font-size:1.4rem;
+      box-shadow:0 0 26px rgba(37,211,102,.38); z-index:800;
+      text-decoration:none; transition:transform .2s, box-shadow .2s;
     }
+    .wa:hover { transform:scale(1.1); box-shadow:0 0 38px rgba(37,211,102,.56); }
 
-    .footer-brand {
-      font-family: var(--font-mono);
-      font-size: 0.9rem;
-      color: var(--blue2);
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 24px;
-    }
-
-    .footer-links a {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--dim);
-      text-decoration: none;
-      letter-spacing: 0.06em;
-      transition: color 0.2s;
-    }
-
-    .footer-links a:hover {
-      color: var(--blue2);
-    }
-
-    .footer-social {
-      display: flex;
-      gap: 10px;
-    }
-
-    .footer-social a {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--dim);
-      font-size: 0.85rem;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .footer-social a:hover {
-      color: var(--blue2);
-      border-color: var(--blue);
-      box-shadow: 0 0 12px rgba(0, 150, 255, 0.2);
-    }
-
-    .footer-copy {
-      font-family: var(--font-code);
-      font-size: 0.72rem;
-      color: rgba(90, 122, 154, 0.6);
-    }
-
-    .footer-copy a {
-      color: var(--teal);
-      text-decoration: none;
-    }
-
-    /* ══════════════════════════════════════
-       WHATSAPP FLOAT
-    ══════════════════════════════════════ */
-    .wa-float {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      width: 54px;
-      height: 54px;
-      background: #25d366;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.5rem;
-      box-shadow: 0 0 30px rgba(37, 211, 102, 0.4);
-      z-index: 999;
-      text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .wa-float:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 40px rgba(37, 211, 102, 0.6);
-    }
-
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        REVEAL ANIMATIONS
-    ══════════════════════════════════════ */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
+    ═══════════════════════════════ */
+    .rv  { opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+    .rvl { opacity:0; transform:translateX(-26px); transition:opacity .7s ease, transform .7s ease; }
+    .rvr { opacity:0; transform:translateX(26px);  transition:opacity .7s ease, transform .7s ease; }
+    .rv.on, .rvl.on, .rvr.on { opacity:1; transform:none; }
 
-    .reveal.on {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .reveal-l {
-      opacity: 0;
-      transform: translateX(-28px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal-l.on {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .reveal-r {
-      opacity: 0;
-      transform: translateX(28px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal-r.on {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    /* ══════════════════════════════════════
+    /* ═══════════════════════════════
        RESPONSIVE
-    ══════════════════════════════════════ */
-    @media (max-width: 900px) {
-
-      .hero-grid,
-      .about-layout,
-      .contact-inner {
-        grid-template-columns: 1fr;
-      }
-
-      .projects-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .strength-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .notice-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .notice-images {
-        flex-direction: row;
-      }
-
-      .hero-metrics {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .nav-links {
-        display: none;
-      }
-
-      .about-card-col {
-        grid-template-columns: 1fr 1fr;
-        display: grid;
-      }
-
-      .form-row-grid {
-        grid-template-columns: 1fr;
-      }
+    ═══════════════════════════════ */
+    @media(max-width:960px){
+      .hero-wrap, .about-grid, .contact-grid { grid-template-columns:1fr; }
+      .proj-grid { grid-template-columns:1fr; }
+      .strengths { grid-template-columns:1fr; }
+      .notice-layout { grid-template-columns:1fr; }
+      .notice-imgs { flex-direction:row; }
+      .nav-links { display:none; }
+      .nav-ham { display:flex; }
+      .form-row { grid-template-columns:1fr; }
+      .hero-terminal { order:-1; }
+    }
+    @media(max-width:540px){
+      .metrics { grid-template-columns:1fr 1fr 1fr; }
+      .proj-img { height:180px; }
+      .notice-box { padding:22px 18px; }
     }
   </style>
 </head>
-
 <body>
 
-  <!-- PCB particle canvas -->
-  <canvas id="pcb-canvas"></canvas>
+<canvas id="pcb"></canvas>
 
-  <!-- WhatsApp -->
-  <a href="https://wa.me/918596048857" target="_blank" class="wa-float" title="WhatsApp">
-    <i class="fab fa-whatsapp"></i>
-  </a>
+<a href="https://wa.me/918596048857" target="_blank" class="wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
 
-  <!-- ════════════ NAVBAR ════════════ -->
-  <nav>
-    <div class="nav-left">
-      <img src="SKMP_PROJECT_MANAGEMENT_LOGO-.png" alt="SKMP Logo" class="nav-logo-img" />
-      <span class="nav-brand">SKMP <span>PROJECTS</span></span>
-      <div class="nav-status"><span class="status-dot"></span> SYSTEM ONLINE</div>
-    </div>
-    <ul class="nav-links">
-      <li><a href="#hero">HOME</a></li>
-      <li><a href="#about">ABOUT</a></li>
-      <li><a href="#projects">PROJECTS</a></li>
-      <li><a href="#contact" class="nav-btn">CONTACT</a></li>
-    </ul>
-  </nav>
+<!-- ══════ NAVBAR ══════ -->
+<nav>
+  <div class="nav-left">
+    <img src="SKMP_PROJECT_MANAGEMENT_LOGO-.png" alt="SKMP Logo" class="nav-logo"/>
+    <span class="nav-brand">SKMP <em>PROJECTS</em></span>
+    <div class="nav-pill"><span class="pulse"></span> SYSTEM ONLINE</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#hero">HOME</a></li>
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="#projects">PROJECTS</a></li>
+    <li><a href="#contact" class="nav-cta">CONTACT</a></li>
+  </ul>
+  <div class="nav-ham" id="ham" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
 
-  <!-- ════════════ HERO ════════════ -->
-  <section id="hero">
-    <div class="hero-grid">
+<div class="mobile-menu" id="mob">
+  <a href="#hero"     onclick="closeMenu()">HOME</a>
+  <a href="#about"    onclick="closeMenu()">ABOUT</a>
+  <a href="#projects" onclick="closeMenu()">PROJECTS</a>
+  <a href="#contact"  onclick="closeMenu()">CONTACT</a>
+</div>
 
-      <!-- Terminal card left -->
-      <div class="hero-terminal reveal-l">
-        <div class="terminal-bar">
-          <span class="t-dot t-dot-r"></span>
-          <span class="t-dot t-dot-y"></span>
-          <span class="t-dot t-dot-g"></span>
-          <span class="terminal-title">skmp_main.ino — Arduino IDE</span>
-        </div>
-        <div class="terminal-body">
-          <span class="t-line t-comment">// SKMP PROJECT MANAGEMENT SYSTEM</span>
-          <span class="t-line t-comment">// Author: Suzen Kumar Mohanty</span>
-          <span class="t-line"> </span>
-          <span class="t-line"><span class="t-keyword">#include </span><span
-              class="t-string">&lt;Wire.h&gt;</span></span>
-          <span class="t-line"><span class="t-keyword">#include </span><span
-              class="t-string">&lt;IoT_Client.h&gt;</span></span>
-          <span class="t-line"> </span>
-          <span class="t-line"><span class="t-type">const char*</span> <span class="t-var">portal</span> <span
-              class="t-keyword">=</span> <span class="t-string">"SKMP_PORTAL"</span>;</span>
-          <span class="t-line"><span class="t-type">int</span> <span class="t-var">projects</span> <span
-              class="t-keyword">=</span> <span class="t-num">4</span>;</span>
-          <span class="t-line"> </span>
-          <span class="t-line"><span class="t-type">void</span> <span class="t-func">setup</span>() {</span>
-          <span class="t-line t-indent"><span class="t-func">Serial</span>.begin(<span
-              class="t-num">9600</span>);</span>
-          <span class="t-line t-indent"><span class="t-func">IoT</span>.connect(<span
-              class="t-string">"Odisha_IN"</span>);</span>
-          <span class="t-line t-indent"><span class="t-func">Portal</span>.init(portal);</span>
-          <span class="t-line">}</span>
-          <span class="t-line"> </span>
-          <span class="t-line"><span class="t-type">void</span> <span class="t-func">loop</span>() {</span>
-          <span class="t-line t-indent"><span class="t-comment">// deliver innovative solutions</span></span>
-          <span class="t-line t-indent"><span class="t-func">build</span>(projects++);</span>
-          <span class="t-line t-indent"><span class="t-func">delay</span>(<span class="t-num">1000</span>);</span>
-          <span class="t-line">}<span class="t-cursor"></span></span>
-        </div>
+<!-- ══════ HERO ══════ -->
+<section id="hero">
+  <div class="hero-wrap">
+    <!-- Terminal -->
+    <div class="terminal hero-terminal rvl">
+      <div class="t-bar">
+        <span class="td td-r"></span>
+        <span class="td td-y"></span>
+        <span class="td td-g"></span>
+        <span class="t-title">skmp_main.ino — Arduino IDE</span>
       </div>
-
-      <!-- Hero right -->
-      <div class="hero-right reveal-r">
-        <div class="hero-badge"><i class="fas fa-microchip"></i> &nbsp;ARDUINO · IOT · EMBEDDED SYSTEMS</div>
-        <h1 class="hero-title">
-          <span class="line1">Build the Future</span>
-          <span class="line2">with Arduino UNO</span>
-        </h1>
-        <p class="hero-desc">
-          SKMP Project Management Portal delivers innovative Arduino-based and IoT solutions for academic and industrial
-          applications — from Balasore, Odisha, India.
-        </p>
-        <div class="hero-ctas">
-          <a href="#projects" class="cta-main">
-            <i class="fas fa-rocket"></i> VIEW PROJECTS
-          </a>
-          <a href="#contact" class="cta-ghost">
-            <i class="fas fa-paper-plane"></i> GET IN TOUCH
-          </a>
-        </div>
-        <div class="hero-metrics">
-          <div class="metric-card">
-            <div class="metric-num">4+</div>
-            <div class="metric-label">Projects</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-num">24/7</div>
-            <div class="metric-label">Helpline</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-num">100%</div>
-            <div class="metric-label">Academic</div>
-          </div>
-        </div>
+      <div class="t-body">
+        <span class="t-ln t-cmt">// SKMP PROJECT MANAGEMENT SYSTEM</span>
+        <span class="t-ln t-cmt">// Author: Suzen Kumar Mohanty</span>
+        <span class="t-ln">&nbsp;</span>
+        <span class="t-ln"><span class="t-kw">#include </span><span class="t-str">&lt;Wire.h&gt;</span></span>
+        <span class="t-ln"><span class="t-kw">#include </span><span class="t-str">&lt;IoT_Client.h&gt;</span></span>
+        <span class="t-ln">&nbsp;</span>
+        <span class="t-ln"><span class="t-ty">const char*</span> <span class="t-var">portal</span> <span class="t-kw">=</span> <span class="t-str">"SKMP_PORTAL"</span>;</span>
+        <span class="t-ln"><span class="t-ty">int</span> <span class="t-var">projects</span> <span class="t-kw">=</span> <span class="t-num">21</span>;</span>
+        <span class="t-ln">&nbsp;</span>
+        <span class="t-ln"><span class="t-ty">void</span> <span class="t-fn">setup</span>() {</span>
+        <span class="t-ln t-i"><span class="t-fn">Serial</span>.begin(<span class="t-num">9600</span>);</span>
+        <span class="t-ln t-i"><span class="t-fn">IoT</span>.connect(<span class="t-str">"Odisha_IN"</span>);</span>
+        <span class="t-ln t-i"><span class="t-fn">Portal</span>.init(portal);</span>
+        <span class="t-ln">}</span>
+        <span class="t-ln">&nbsp;</span>
+        <span class="t-ln"><span class="t-ty">void</span> <span class="t-fn">loop</span>() {</span>
+        <span class="t-ln t-i"><span class="t-cmt">// deliver innovative solutions</span></span>
+        <span class="t-ln t-i"><span class="t-fn">build</span>(projects++);</span>
+        <span class="t-ln t-i"><span class="t-fn">delay</span>(<span class="t-num">1000</span>);</span>
+        <span class="t-ln">}<span class="t-cur"></span></span>
       </div>
-
     </div>
-  </section>
 
-  <!-- ════════════ ABOUT ════════════ -->
-  <section id="about" class="section-wrap">
-    <div class="about-layout">
+    <!-- Right -->
+    <div class="hero-right rvr">
+      <div class="hero-badge"><i class="fas fa-microchip"></i>&nbsp; ARDUINO · IOT · EMBEDDED SYSTEMS</div>
+      <h1 class="hero-h1">
+        <span class="l1">Build the Future</span>
+        <span class="l2">with Arduino UNO</span>
+      </h1>
+      <p class="hero-desc">SKMP Project Management Portal delivers innovative Arduino-based and IoT solutions for academic and industrial applications — from Balasore, Odisha, India.</p>
+      <div class="hero-ctas">
+        <a href="#projects" class="btn-main"><i class="fas fa-rocket"></i> VIEW PROJECTS</a>
+        <a href="#contact"  class="btn-ghost"><i class="fas fa-paper-plane"></i> GET IN TOUCH</a>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-n">21+</div><div class="metric-l">Projects</div></div>
+        <div class="metric"><div class="metric-n">24/7</div><div class="metric-l">Helpline</div></div>
+        <div class="metric"><div class="metric-n">100%</div><div class="metric-l">Academic</div></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <!-- Left: image + profile card -->
-      <div class="about-card-col reveal-l">
+<!-- ══════ ABOUT ══════ -->
+<section id="about" class="section">
+  <div class="sec-inner">
+    <div class="about-grid">
 
-        <!-- PRESERVED: About photo -->
-        <div class="profile-img-wrap">
-          <img src="images/web photo.jpg" alt="Suzen Kumar Mohanty" />
-          <div class="profile-img-overlay"></div>
-          <div class="corner-tl"></div>
-          <div class="corner-tr"></div>
-          <div class="corner-bl"></div>
-          <div class="corner-br"></div>
-          <div class="profile-img-label">// ENGINEER · DEVELOPER</div>
+      <div class="about-left rvl">
+        <div class="profile-img">
+          <img src="images/web photo.jpg" alt="Suzen Kumar Mohanty"/>
+          <div class="ov"></div>
+          <div class="c-tl"></div><div class="c-tr"></div>
+          <div class="c-bl"></div><div class="c-br"></div>
+          <div class="lbl">// ENGINEER · DEVELOPER</div>
         </div>
-
-        <div class="profile-info-card">
-          <div class="profile-info-header">
-            <div class="profile-avatar-small">SK</div>
+        <div class="profile-card">
+          <div class="profile-head">
+            <div class="avatar">SK</div>
             <div>
-              <div class="profile-name-mono">Suzen Kumar Mohanty</div>
-              <div class="profile-role-mono">// Web Dev · IoT Engineer</div>
+              <div class="profile-name">Suzen Kumar Mohanty</div>
+              <div class="profile-role">// Web Dev · IoT Engineer</div>
             </div>
           </div>
-          <div class="skill-grid">
-            <span class="skill-tag">HTML/CSS</span>
-            <span class="skill-tag">JavaScript</span>
-            <span class="skill-tag">Vue.js</span>
-            <span class="skill-tag">Arduino</span>
-            <span class="skill-tag">IoT</span>
-            <span class="skill-tag">ESP32</span>
-            <span class="skill-tag">ESP8266</span>
-            <span class="skill-tag">Sensors</span>
+          <div class="skills">
+            <span class="sk">HTML/CSS</span><span class="sk">JavaScript</span>
+            <span class="sk">Vue.js</span><span class="sk">Arduino</span>
+            <span class="sk">IoT</span><span class="sk">ESP32</span>
+            <span class="sk">ESP8266</span><span class="sk">Sensors</span>
           </div>
-          <div class="social-row" style="margin-bottom:16px;">
-            <a href="https://www.linkedin.com/in/er-suzen-kumar-mohanty-4064b824a/" target="_blank" class="soc-btn"><i
-                class="fab fa-linkedin-in"></i></a>
-            <a href="https://github.com/suzenkumar" target="_blank" class="soc-btn"><i class="fab fa-github"></i></a>
-            <a href="https://www.instagram.com/suzen_mohanty_world/" target="_blank" class="soc-btn"><i
-                class="fab fa-instagram"></i></a>
-            <a href="https://wa.me/918596048857" target="_blank" class="soc-btn"><i class="fab fa-whatsapp"></i></a>
+          <div class="socials">
+            <a href="https://www.linkedin.com/in/er-suzen-kumar-mohanty-4064b824a/" target="_blank" class="soc"><i class="fab fa-linkedin-in"></i></a>
+            <a href="https://github.com/suzenkumar" target="_blank" class="soc"><i class="fab fa-github"></i></a>
+            <a href="https://www.instagram.com/suzen_mohanty_world/" target="_blank" class="soc"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/918596048857" target="_blank" class="soc"><i class="fab fa-whatsapp"></i></a>
           </div>
-          <a href="https://suzen-kumar-mohanty-8fdv.vercel.app/" target="_blank" class="portfolio-btn">
+          <a href="https://suzen-kumar-mohanty-8fdv.vercel.app/" target="_blank" class="port-btn">
             <i class="fas fa-external-link-alt"></i> VIEW PORTFOLIO
           </a>
         </div>
-
       </div>
 
-      <!-- Right: text + strengths -->
-      <div class="about-text-col reveal-r">
+      <div class="rvr">
         <div class="sec-tag">About Me</div>
-        <h2 class="sec-title">Front-End Dev &<br><span>IoT Innovator</span></h2>
-        <div class="sec-divider"></div>
-        <p class="about-desc">
-          I am a passionate <strong>Web Developer</strong> with strong expertise in <strong>HTML, CSS, JavaScript, and
-            Vue.js</strong>, specializing in building scalable, responsive, and user-friendly web interfaces. I focus on
-          writing clean, maintainable code and creating seamless user experiences across all devices.
-        </p>
-        <p class="about-desc">
-          In addition to web development, I work on <strong>IoT-based projects</strong>, integrating hardware with web
-          technologies to build smart, real-time systems — connecting microcontrollers like <strong>Arduino</strong>
-          with web dashboards, implementing sensor-based monitoring, and developing automation solutions.
-        </p>
-        <div class="strength-grid">
-          <div class="strength-card">
-            <div class="strength-card-title"><i class="fas fa-palette"></i> &nbsp;UI / UX Design</div>
-            <div class="strength-card-desc">Designing responsive and modern interfaces across all devices.</div>
-          </div>
-          <div class="strength-card">
-            <div class="strength-card-title"><i class="fas fa-code"></i> &nbsp;Vue.js SPAs</div>
-            <div class="strength-card-desc">Developing dynamic Single Page Applications with Vue.js.</div>
-          </div>
-          <div class="strength-card">
-            <div class="strength-card-title"><i class="fas fa-microchip"></i> &nbsp;IoT Integration</div>
-            <div class="strength-card-desc">Arduino & ESP hardware integration with real-time dashboards.</div>
-          </div>
-          <div class="strength-card">
-            <div class="strength-card-title"><i class="fas fa-plug"></i> &nbsp;API & Real-Time</div>
-            <div class="strength-card-desc">API integration and live data handling for IoT systems.</div>
-          </div>
+        <h2 class="sec-title">Full-Stack Dev &<br><span>IoT Innovator</span></h2>
+        <div class="sec-div"></div>
+        <p class="about-desc">I am a passionate <strong>Web Developer</strong> with strong expertise in <strong>HTML, CSS, JavaScript, and Vue.js</strong>, specializing in building scalable, responsive, and user-friendly web interfaces. I focus on writing clean, maintainable code and creating seamless user experiences across all devices.</p>
+        <p class="about-desc">In addition to web development, I work on <strong>IoT-based projects</strong>, integrating hardware with web technologies to build smart, real-time systems — connecting microcontrollers like <strong>Arduino</strong> with web dashboards, implementing sensor-based monitoring, and developing automation solutions.</p>
+        <div class="strengths">
+          <div class="str-card"><div class="str-t"><i class="fas fa-palette"></i> &nbsp;UI / UX Design</div><div class="str-d">Designing responsive and modern interfaces across all devices.</div></div>
+          <div class="str-card"><div class="str-t"><i class="fas fa-code"></i> &nbsp;Vue.js SPAs</div><div class="str-d">Developing dynamic Single Page Applications with Vue.js.</div></div>
+          <div class="str-card"><div class="str-t"><i class="fas fa-microchip"></i> &nbsp;IoT Integration</div><div class="str-d">Arduino & ESP hardware integration with real-time dashboards.</div></div>
+          <div class="str-card"><div class="str-t"><i class="fas fa-plug"></i> &nbsp;API & Real-Time</div><div class="str-d">API integration and live data handling for IoT systems.</div></div>
         </div>
       </div>
 
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ════════════ PROJECTS ════════════ -->
-  <section id="projects" class="section-wrap">
-    <div class="projects-inner">
-      <div class="section-header reveal">
-        <div class="sec-tag">Portfolio</div>
-        <h2 class="sec-title">Successful <span>Projects</span></h2>
-        <div class="sec-divider"></div>
-        <p class="sec-sub">Each project is built with precision, proper documentation, and guided by real-world
-          engineering principles using Arduino Uno and IoT hardware.</p>
-      </div>
-
-      <div class="projects-grid">
-
-        <!-- Project 1 — IMAGE PRESERVED -->
-        <div class="proj-card reveal">
-          <div class="proj-img-wrap">
-            <img src="images/portfolioImage1.jpg" alt="Automatic Sun Tracking System" />
-            <div class="proj-img-overlay"></div>
-            <span class="proj-num-badge">PROJECT #01</span>
-          </div>
-          <div class="proj-body">
-            <h3 class="proj-title">Automatic Sun Tracking System</h3>
-            <p class="proj-desc">Continuously orients a solar panel toward the sun using LDR sensors and servo motors,
-              maximizing energy capture efficiency compared to fixed panels.</p>
-            <div class="proj-gadgets">
-              <span class="gadgets-label">// COMPONENTS:</span>
-              (2) Solar Panel · Arduino Uno · 5V Power Source · LDR Motion Sensor · Servo Motor · LEDs · Thermacol · 12V
-              Battery · DC Fan
-            </div>
-            <div class="proj-actions">
-              <a href="images/Sun Tracking Solar Panel Using Arduino   Project.pdf" class="proj-btn proj-btn-primary"><i
-                  class="fas fa-file-pdf"></i> Project Report</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Project 2 — IMAGE PRESERVED -->
-        <div class="proj-card reveal">
-          <div class="proj-img-wrap">
-            <img src="images/bluetooth controlled car with arduino.png" alt="Bluetooth Controlled Car" />
-            <div class="proj-img-overlay"></div>
-            <span class="proj-num-badge">PROJECT #02</span>
-          </div>
-          <div class="proj-body">
-            <h3 class="proj-title">Bluetooth Controlled Car</h3>
-            <p class="proj-desc">A wireless vehicle driven via smartphone app. Combines basic electronics, motor
-              control, and Bluetooth communication for an engaging robotics build.</p>
-            <div class="proj-gadgets">
-              <span class="gadgets-label">// COMPONENTS:</span>
-              Arduino Uno · Jumper Wires · Motor Controller · Switch · DC Motor · 9V Battery · Car Kit
-            </div>
-            <div class="proj-actions">
-              <a href="images/Bluetooth Car Project-main project report.pdf" class="proj-btn proj-btn-primary"><i
-                  class="fas fa-file-pdf"></i> PPT & Certificate</a>
-              <a href="images/bluetooth controlled car with arduino.pdf" class="proj-btn proj-btn-ghost"><i
-                  class="fas fa-book"></i> Report</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Project 3 — IMAGE PRESERVED -->
-        <div class="proj-card reveal">
-          <div class="proj-img-wrap">
-            <img src="images/inverter project.png" alt="Electrical Inverter Project" />
-            <div class="proj-img-overlay"></div>
-            <span class="proj-num-badge">PROJECT #03</span>
-          </div>
-          <div class="proj-body">
-            <h3 class="proj-title">Electrical Inverter Project</h3>
-            <p class="proj-desc">Converts DC to AC current to power small household appliances. A low-cost, efficient
-              inverter essential for power electronics and renewable energy systems.</p>
-            <div class="proj-gadgets">
-              <span class="gadgets-label">// COMPONENTS:</span>
-              Transformer · Inverter Board · Power Cord
-            </div>
-            <div class="proj-actions">
-              <a href="images/INVERTER PROJECT ELECTICAL.pdf" class="proj-btn proj-btn-primary"><i
-                  class="fas fa-file-pdf"></i> Project Report</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Project 4 — IMAGE PRESERVED -->
-        <div class="proj-card reveal">
-          <div class="proj-img-wrap">
-            <img src="images/RADAR.png" alt="Radar Detection System" />
-            <div class="proj-img-overlay"></div>
-            <span class="proj-num-badge">PROJECT #04</span>
-          </div>
-          <div class="proj-body">
-            <h3 class="proj-title">Radar Detection System</h3>
-            <p class="proj-desc">An ultrasonic radar that sweeps and detects nearby objects, visualizing them on a
-              display — built with Arduino Uno and a servo motor for real-time scanning.</p>
-            <div class="proj-gadgets">
-              <span class="gadgets-label">// COMPONENTS:</span>
-              Ultrasonic Sensor · Arduino Uno · 5V Power Source · Servo Motor · Thermacol
-            </div>
-            <div class="proj-actions">
-              <a href="images/Radar Project-main project report.pdf" class="proj-btn proj-btn-primary"><i
-                  class="fas fa-file-pdf"></i> PPT & Certificate</a>
-              <a href="images/RADAR.pdf" class="proj-btn proj-btn-ghost"><i class="fas fa-book"></i> Report</a>
-            </div>
-          </div>
-        </div>
-
-      </div>
+<!-- ══════ PROJECTS ══════ -->
+<section id="projects" class="section">
+  <div class="sec-inner">
+    <div class="sec-hd rv">
+      <div class="sec-tag">Portfolio</div>
+      <h2 class="sec-title">Successful <span>Projects</span></h2>
+      <div class="sec-div"></div>
+      <p class="sec-sub">Each project is built with precision, proper documentation, and guided by real-world engineering principles using Arduino Uno and IoT hardware.</p>
     </div>
-  </section>
 
-  <!-- ════════════ NOTICE ════════════ -->
-  <section id="notice" class="section-wrap">
-    <div class="notice-inner reveal">
-      <div class="notice-head">
-        <div class="notice-icon-box">⚠️</div>
-        <div>
-          <div class="notice-title">IMPORTANT_NOTICE.txt</div>
-          <div class="notice-subtitle">// Read before placing any order or using hardware</div>
+    <div class="proj-grid" id="projGrid">
+
+      <!-- PROJECT 01 -->
+      <div class="proj-card rv">
+        <div class="proj-img" data-video="" data-title="Automatic Sun Tracking System">
+          <img src="images/portfolioImage1.jpg" alt="Automatic Sun Tracking System"/>
+          <div class="ov"></div>
+          <span class="proj-num">PROJECT #01</span>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title">Automatic Sun Tracking System</h3>
+          <p class="proj-desc">Continuously orients a solar panel toward the sun using LDR sensors and servo motors, maximizing energy capture efficiency compared to fixed panels.</p>
+          <div class="proj-comp"><span class="comp-lbl">// COMPONENTS:</span>(2) Solar Panel · Arduino Uno · 5V Power Source · LDR Motion Sensor · Servo Motor · LEDs · Thermacol · 12V Battery · DC Fan</div>
+          <div class="proj-actions">
+            <a href="images/Sun Tracking Solar Panel Using Arduino   Project.pdf" target="_blank" class="pbtn pbtn-primary"><i class="fas fa-file-pdf"></i> Project Report</a>
+          </div>
         </div>
       </div>
-      <div class="notice-layout">
-        <ul class="notice-list">
-          <li>This project is developed for educational and research purposes. Follow proper electrical safety
-            guidelines.</li>
-          <li>Ensure proper voltage supply before connecting the device to any power source.</li>
-          <li>Do not modify the hardware without appropriate technical knowledge.</li>
-          <li>Data collected through IoT modules should be handled responsibly at all times.</li>
-          <li>We are not responsible for hardware damage caused by improper use or handling.</li>
-          <li>Before COD payment, verify the project is tagged with our official SKMP logo to confirm authenticity and
-            prevent fraud.</li>
-        </ul>
-        <!-- IMAGES PRESERVED -->
-        <div class="notice-images">
-          <img src="images/real1.jpg" alt="SKMP Official Logo Tag" />
-          <img src="images/real2.jpg" alt="Arduino UNO Board" />
+
+      <!-- PROJECT 02 -->
+      <div class="proj-card rv">
+        <div class="proj-img" data-video="" data-title="Bluetooth Controlled Car">
+          <img src="images/bluetooth controlled car with arduino.png" alt="Bluetooth Controlled Car"/>
+          <div class="ov"></div>
+          <span class="proj-num">PROJECT #02</span>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title">Bluetooth Controlled Car</h3>
+          <p class="proj-desc">A wireless vehicle driven via smartphone app. Combines basic electronics, motor control, and Bluetooth communication for an engaging robotics build.</p>
+          <div class="proj-comp"><span class="comp-lbl">// COMPONENTS:</span>Arduino Uno · Jumper Wires · Motor Controller · Switch · DC Motor · 9V Battery · Car Kit</div>
+          <div class="proj-actions">
+            <a href="images/Bluetooth Car Project-main project report.pdf" target="_blank" class="pbtn pbtn-primary"><i class="fas fa-file-pdf"></i> Project Report</a>
+          </div>
         </div>
       </div>
+
+     <!-- PROJECT 03 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/SZI9CmqqLW4"
+       data-title="LED Chaser">
+
+    <img src="./Iot Project Source code/LED CHASER.png"
+         alt="LED Chaser"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #03</span>
+
+    <!-- Play Button -->
+    <div class="play-wrap">
+      <a href="https://youtu.be/SZI9CmqqLW4"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
     </div>
-  </section>
 
-  <!-- ════════════ CONTACT ════════════ -->
-  <section id="contact" class="section-wrap">
-    <div class="contact-inner">
+  </div>
 
-      <div class="reveal-l">
-        <div class="sec-tag">Contact</div>
-        <h2 class="sec-title">Let's Build<br><span>Together</span></h2>
-        <div class="sec-divider"></div>
-        <p class="sec-sub">Reach out for project inquiries, academic support, or custom IoT builds.</p>
-        <div class="contact-info">
-          <div class="info-row">
-            <div class="info-row-icon"><i class="fas fa-map-marker-alt"></i></div>
-            <div>
-              <div class="info-row-label">Address</div>
-              <div class="info-row-val">Polishline, Balasore, Odisha, India</div>
-            </div>
-          </div>
-          <div class="info-row">
-            <div class="info-row-icon"><i class="fas fa-envelope"></i></div>
-            <div>
-              <div class="info-row-label">Email</div>
-              <div class="info-row-val">skmpcompany@gmail.com</div>
-            </div>
-          </div>
-          <div class="info-row">
-            <div class="info-row-icon"><i class="fas fa-phone"></i></div>
-            <div>
-              <div class="info-row-label">Phone</div>
-              <div class="info-row-val">+91-7008608082</div>
-            </div>
-          </div>
-          <div class="info-row">
-            <div class="info-row-icon"><i class="fab fa-whatsapp"></i></div>
-            <div>
-              <div class="info-row-label">Helpline (Message Only)</div>
-              <div class="info-row-val">+91-8596048857</div>
-            </div>
-          </div>
-          <div class="hours-badge">
-            <span class="status-dot"></span>
-            Available: Mon–Sun · 7:00 AM – 10:00 PM IST
-          </div>
-        </div>
-      </div>
+  <div class="proj-body">
+    <h3 class="proj-title">
+      🔥 Build Amazing Running LEDs with Arduino in Minutes!
+    </h3>
 
-      <div class="form-panel reveal-r">
-        <div class="form-panel-header">
-          <i class="fas fa-terminal"></i>
-          contact_form.submit() — SKMP Portal
-        </div>
-        <div class="form-body">
-          <form action="https://api.web3forms.com/submit" method="POST">
-            <input type="hidden" name="access_key" value="feab9ecf-0310-448c-b1e7-a34b83eb1f2c" />
-            <div class="form-row-grid">
-              <div class="form-group">
-                <label class="form-label">Name</label>
-                <input type="text" name="Name" class="form-input" placeholder="Your name" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" name="Email id" class="form-input" placeholder="email@example.com" required />
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Phone <span style="font-size:0.65rem;color:var(--dim)">(with country
-                  code)</span></label>
-              <input type="text" name="Phone Number" class="form-input" placeholder="+91 98765 43210" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Message</label>
-              <textarea name="Message from Skmp Project Management Department" class="form-textarea"
-                placeholder="Describe your project idea..." required></textarea>
-            </div>
-            <div class="form-note"><span>NOTE:</span> Our helpline is available 24hr (message only). Online support: 7AM
-              – 10PM daily.</div>
-            <button type="submit" class="submit-btn">
-              <i class="fas fa-paper-plane"></i> SEND MESSAGE
-            </button>
-          </form>
-        </div>
-      </div>
+    <p class="proj-desc">
+      Sequential LED lighting effect using shift registers or microcontroller PWM.
+      A classic beginner circuit demonstrating timing control and digital output patterns.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+     1. Arduino Uno 2. LED's 3.Bread board 4.Jumper wires 5.Data cable
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PROJECT 04 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/lYO5gyBTMs4"
+       data-title="Real Time Face Detection System">
+
+    <img src="./Iot Project Source code/REAL TIME FACE DETECTION SYSTEM.png"
+         alt="Real Time Face Detection"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #04</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/lYO5gyBTMs4"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      Real Time Face Detection System Using AI & OpenCV | Smart Security Project
+    </h3>
+
+    <p class="proj-desc">
+      Detects and tracks human faces in a live video feed using OpenCV.
+      Ideal for security systems, smart cameras, and AI-integrated embedded setups.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+    1 Arduino board,2 Led's 3.Bread Board 4.jumperWire 5.buzzer 6. Data Cable
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 05 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/FFLsHaF9tio"
+       data-title="Smart Door Automatic System">
+
+    <img src="./Iot Project Source code/SMART DOOR.png"
+         alt="Smart Door System"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #05</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/FFLsHaF9tio"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      Automatic Smart Door Opening System | Arduino Project 2026
+    </h3>
+
+    <p class="proj-desc">
+      Automatically opens and closes a door using a PIR or ultrasonic sensor.
+      Demonstrates servo motor control and proximity-based automation.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+1 x Arduino UNO Board,1 x HC-SR04 Ultrasonic Sensor,1 x Servo Motor (SG90),Jumper Wires,USB Cable,buzzer,tharmacol </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 06 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/gSdbn0pag88"
+       data-title="Motion Tracking Radar">
+
+    <img src="./Iot Project Source code/REAL TIME OBJECT DETECTION RADAR.png"
+         alt="Motion Tracking Radar"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #06</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/gSdbn0pag88"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      🚨 Real-Time Object Detection Radar Using Arduino Uno
+    </h3>
+
+    <p class="proj-desc">
+      Sweeps a servo-mounted ultrasonic sensor to detect and display
+      object positions on a radar-style interface — great for surveillance and robotics.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+      1 x Arduino UNO Board,1 x HC-SR04 Ultrasonic Sensor,1 x Servo Motor (SG90),Jumper Wires,USB Cable,buzzer,tharmacol,buzzer,led,12cdisplay
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 07 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/gSdbn0pag88"
+       data-title="DIY Radar System">
+
+    <img src="./Iot Project Source code/RADAR USING ARDUINO & ULTRASONIC SENSOR.png"
+         alt="Radar System"
+         class="ph-img"
+         onerror="this.parentElement.innerHTML+='<div class=ph-img><div class=proj-ph><i class=fas fa-satellite-dish></i></div></div>';this.remove()"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #07</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/gSdbn0pag88"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      🔥 DIY Radar Using Arduino & Ultrasonic Sensor
+    </h3>
+
+    <p class="proj-desc">
+      A full radar sweep system using ultrasonic sensing and serial communication
+      to visualize detected targets in real time on a graphical display.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+     1 x Arduino UNO Board,1 x HC-SR04 Ultrasonic Sensor,1 x Servo Motor (SG90),Jumper Wires,USB Cable,buzzer,tharmacol
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 08 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/yk_GfBR2M5k"
+       data-title="Ultrasonic Sensor Distance Measure">
+
+    <img src="./Iot Project Source code/ULTRASONIC SENSOR DISTANCE MEASUREMENT.png"
+         alt="Ultrasonic Distance Measure"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #08</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/yk_GfBR2M5k"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      📏 Ultrasonic Sensor Distance Measurement Using Arduino | DIY Project 🚀
+    </h3>
+
+    <p class="proj-desc">
+      Measures distances accurately using sound wave echo timing.
+      Output is displayed on an LCD or serial monitor — foundational
+      for robotics and obstacle avoidance.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+      Arduino,ultrasonic sensor( Hc-sr04 ),LCD display with I2C,Resistor 220ohm.,LED,Breadboard.,Jumper wire.
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PROJECT 09 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/LmR_J-YCVYc"
+       data-title="AquaAlert: Overflow Prevention System">
+
+    <img src="./Iot Project Source code/water overflow prevention system.png"
+         alt="AquaAlert Overflow System"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #09</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/LmR_J-YCVYc"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      🚨 Stop Water Tank Overflow Forever! Arduino Smart Solution 💧
+    </h3>
+
+    <p class="proj-desc">
+      Monitors water levels using an HC-SR04 ultrasonic sensor and
+      automatically triggers alerts or shuts off the pump before
+      overflow occurs.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+     1 x Arduino UNO Board
+1 x Ultrasonic Sensor
+1 x Buzzer
+1 x 16x2 LCD Display
+1 x I2C Module
+Jumper Wires
+1 x Double Battery Holder with DC Jack & Switch
+Water bottle
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" target="_blank" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PROJECT 10 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/lR3lD4CF_lc"
+       data-title="DIY Digital Level Indicator with PID Control">
+       <img src="./Iot Project Source code/digital.png"
+         alt="AquaAlert Overflow System"
+         class="ph-img"/>
+
+    <div class="proj-ph">
+      <i class="fas fa-tachometer-alt"></i>
+    </div>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #10</span>
+   <div class="play-wrap">
+      <a href="https://youtu.be/lR3lD4CF_lc"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      DIY Digital Level Indicator with PID Control
+    </h3>
+
+    <p class="proj-desc">
+      Measures tilt using a gyroscope and applies a PID algorithm
+      for precise feedback. Useful for balancing platforms,
+      robotics stabilization, and calibration tools.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+      1 x Arduino UNO Board
+ 1 x HC-SR04 Ultrasonic Sensor
+ 1 x Servo Motor (SG90)
+ Jumper Wires
+ USB Cable
+ Power Supply (9V Battery with connector)
+ Cardboard and plastic ball for the demonstrative structure
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+    </div>
+  </div>
+</div>
+<!-- PROJECT 11 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/TSOgYm0fKac"
+       data-title="DIY Height Measurement Tool with LCD Display">
+
+    <img src="./Iot Project Source code/diy smart height measurement tool.png"
+         alt="Height Measurement Tool"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #11</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/TSOgYm0fKac"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      DIY Height Measurement Tool with LCD Display
+    </h3>
+
+    <p class="proj-desc">
+      Measures a person's height using ultrasonic sensing and displays
+      the result live on an LCD. Simple, portable, and accurate for
+      medical or fitness use.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+      Arduino UNO · HC-SR04 · LCD 16x2 · 9V Battery.cardboard
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PROJECT 12 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/I3J4u5-NZBs?si=6lHP2r1dSlX_9Knw&t=698"
+       data-title="DIY Mini Smart Dustbin">
+       <img src="./Iot Project Source code/smart dustbin.png"
+         alt="smarrt dustbin"
+         class="ph-img"/>
+
+    <div class="proj-ph">
+      <i class="fas fa-trash-alt"></i>
+    </div>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #12</span>
+     <div class="play-wrap">
+      <a href="https://youtu.be/I3J4u5-NZBs?si=6lHP2r1dSlX_9Knw&t=698"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      DIY Mini Smart Dustbin
+    </h3>
+
+    <p class="proj-desc">
+      A contactless dustbin whose lid automatically opens when a hand
+      is detected nearby using an IR sensor. Hygienic, convenient,
+      and a fun IoT introduction project.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+Arduino Uno HC-SR04 Ultrasonic Sensor SG90 Servo Motor Cardboard (for bin structure and lid) Jumper Wires Breadboard (optional) USB Cable Glue gun / Cutter for crafting
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<!-- PROJECT 13 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/O6UvS3MPcLA"
+       data-title="Smart Glasses for Blind People">
+
+    <img src="./Iot Project Source code/SMART GLASSES.png"
+         alt="Smart Glasses for Blind"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #13</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/O6UvS3MPcLA"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      👓 Smart Glasses for Blind People Using Arduino | Assistive Technology 🚀
+    </h3>
+
+    <p class="proj-desc">
+      An assistive walking stick that detects obstacles using ultrasonic
+      sensors and alerts the visually impaired user via vibration or
+      audio feedback in real time.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+    1 Arduino board,2 UltraSonic Sensor 3 .jumperWire 4.buzzer 5. Data Cable 6.glass
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 14 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/eOheJ0iZPyQ"
+       data-title="EVM Machine Using Arduino UNO">
+
+    <img src="./Iot Project Source code/BUILD YOUR OWN EVM WITH ARDUINO.png"
+         alt="EVM Machine Arduino"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #14</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/eOheJ0iZPyQ"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      EVM Machine Using Arduino Uno | Electronic Voting Machine Project
+    </h3>
+
+    <p class="proj-desc">
+      A simulated Electronic Voting Machine with candidate buttons and a result
+      display. Demonstrates input handling, vote counting logic, and secure result output.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+      Arduino UNO · Push Buttons · LCD 16x2 · LEDs
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PROJECT 15 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video=""
+       data-title="EVM Machine (Electrical)">
+
+    <img src="./Iot Project Source code/EVM machine (Electrical)/2.jpg"
+         alt="EVM Machine Electrical"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #15</span>
+    <span class="no-vid">VIDEO COMING SOON</span>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      Build EVM Machine (Electrical)
+    </h3>
+
+    <p class="proj-desc">
+      A hardware-based EVM using discrete electrical components — relays,
+      switches, and indicator lamps — without a microcontroller.
+      Focuses on pure circuit design principles.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+    Buzzer, led,Push switch, cardbord ,switch
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<!-- PROJECT 16 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/x03dE8Zif-w"
+       data-title="RFID Student Attendance System">
+
+    <img src="./Iot Project Source code/rfid student attendence system.png"
+         alt="RFID Attendance System"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #16</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/x03dE8Zif-w"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      RFID Student Attendance System Using Arduino | Smart College Project 2026
+    </h3>
+
+    <p class="proj-desc">
+      Logs attendance automatically when students or employees scan their RFID cards.
+      Records timestamps and stores data for reporting — a practical institution-ready build.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+    Arduino Uno/Nano – The brain of the project
+✔️ RFID Module (RC522) – Reads RFID cards and key tags
+✔️ RFID Cards & Key Tags – Used for scanning attendance
+✔️ Jumper Wires & Breadboard – For easy connections
+✔️ Power Supply – To power the system
 
     </div>
-  </section>
 
-  <!-- ════════════ FOOTER ════════════ -->
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-logo-row">
-        <img src="SKMP_PROJECT_MANAGEMENT_LOGO-.png" alt="SKMP Logo" />
-        <span class="footer-brand">SKMP PROJECT MANAGEMENT</span>
-      </div>
-      <div class="footer-links">
-        <a href="All Legal Condition/termandcondition.html">Terms & Conditions</a>
-        <a href="All Legal Condition/privacy.html">Privacy Policy</a>
-      </div>
-      <div class="footer-social">
-        <a href="https://www.facebook.com/manjulata.mohanty.10" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://x.com/suzen43282" target="_blank"><i class="fab fa-twitter"></i></a>
-        <a href="https://www.youtube.com/@SKMPGROUP" target="_blank"><i class="fab fa-youtube"></i></a>
-        <a href="https://www.linkedin.com/in/suzen-kumar-mohanty-4064b824a/" target="_blank"><i
-            class="fab fa-linkedin-in"></i></a>
-        <a href="https://www.instagram.com/suzen_mohanty_world/" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="https://wa.me/+918596048857" target="_blank"><i class="fab fa-whatsapp"></i></a>
-        <a href="https://github.com/suzenkumar" target="_blank"><i class="fab fa-github"></i></a>
-      </div>
-      <div class="footer-copy">
-        © 2026 SKMP PROJECT MANAGEMENT. All rights reserved with ♥ by
-        <a href="https://suzen-kumar-mohanty-8fdv.vercel.app/" target="_blank">Er. Suzen Kumar Mohanty</a>.
-        Last updated: 14/02/2025(Website Is Fully Made Using Claudi Ai )
-      </div>
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
     </div>
-  </footer>
+  </div>
+</div>
 
-  <!-- ════════════ SCRIPTS ════════════ -->
-  <script>
-    // PCB circuit trace background
-    const canvas = document.getElementById('pcb-canvas');
-    const ctx = canvas.getContext('2d');
+     <!-- PROJECT 17 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/s_0UQm30jz0"
+       data-title="RFID Smart Home Security & Automation">
 
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
+    <img src="./Iot Project Source code/RFID SMART HOME.png"
+         alt="RFID Smart Home"
+         class="ph-img"/>
 
-    // Draw PCB-style grid + traces
-    function drawPCB() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #17</span>
 
-      const cols = Math.ceil(canvas.width / 60);
-      const rows = Math.ceil(canvas.height / 60);
+    <div class="play-wrap">
+      <a href="https://youtu.be/s_0UQm30jz0"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
 
-      // Grid dots
-      ctx.fillStyle = 'rgba(0, 150, 255, 0.4)';
-      for (let c = 0; c <= cols; c++) {
-        for (let r = 0; r <= rows; r++) {
-          ctx.beginPath();
-          ctx.arc(c * 60, r * 60, 1, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-
-      // Horizontal traces
-      ctx.strokeStyle = 'rgba(0, 229, 204, 0.25)';
-      ctx.lineWidth = 1;
-      const hTraces = [
-        [0, 120, canvas.width * 0.6, 120],
-        [canvas.width * 0.3, 300, canvas.width, 300],
-        [0, 480, canvas.width * 0.5, 480],
-        [canvas.width * 0.4, 600, canvas.width, 600],
-      ];
-      hTraces.forEach(([x1, y1, x2, y2]) => {
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-      });
-
-      // Vertical traces
-      const vTraces = [
-        [canvas.width * 0.2, 0, canvas.width * 0.2, canvas.height * 0.5],
-        [canvas.width * 0.5, canvas.height * 0.3, canvas.width * 0.5, canvas.height],
-        [canvas.width * 0.75, 0, canvas.width * 0.75, canvas.height * 0.4],
-      ];
-      ctx.strokeStyle = 'rgba(0, 150, 255, 0.2)';
-      vTraces.forEach(([x1, y1, x2, y2]) => {
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-      });
-
-      // Pads at intersections
-      const pads = [
-        [canvas.width * 0.2, 120], [canvas.width * 0.5, 300],
-        [canvas.width * 0.75, 600], [canvas.width * 0.4, 480]
-      ];
-      pads.forEach(([x, y]) => {
-        ctx.beginPath();
-        ctx.arc(x, y, 5, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(0,229,204,0.4)';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0,229,204,0.5)';
-        ctx.fill();
-      });
-    }
-    drawPCB();
-    window.addEventListener('resize', drawPCB);
-
-    // Scroll reveal
-    const reveals = document.querySelectorAll('.reveal, .reveal-l, .reveal-r');
-    const revealObs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) e.target.classList.add('on');
-      });
-    }, { threshold: 0.1 });
-    reveals.forEach(r => revealObs.observe(r));
-  </script>
-
-  <!-- ═══════════════════════════════════════════
-     SKMP AI CHATBOT — Real-time Claude powered
-════════════════════════════════════════════ -->
+  </div>
   
 
+  <div class="proj-body">
+    <h3 class="proj-title">
+      RFID Smart Home Security & Automation System | Arduino Project 2026 🚀
+    </h3>
 
+    <p class="proj-desc">
+      Controls home appliances and door locks via RFID authentication.
+      Only authorized cards trigger actions, combining home automation
+      with access security.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+      1 x Arduino UNO Board 1 x Servo Motor 1 x Buzzer 1 x RFID Reader 2 x RFID Cards 1 x Breadboard Jumper Wires 1 x Double Battery Holder with DC Jack & Switch 2 x 3.7 V Rechargeable Batteries
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+
+ <!-- PROJECT 18 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/I3J4u5-NZBs"
+       data-title="UrbanSync: Intelligent City Management System">
+
+    <img src="./Iot Project Source code/urbanSync.png"
+         alt="UrbanSync: Intelligent City Management System"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #18</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/I3J4u5-NZBs"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+
+  </div>
+  
+
+ <div class="proj-body">
+    <h3 class="proj-title">
+      UrbanSync: Intelligent City Management System
+    </h3>
+
+    <p class="proj-desc">
+      Vehicles with registered RFID tags pass through automatically while
+      unauthorized ones are stopped. Includes a full circuit diagram for
+      clear hardware implementation.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+     
+LDR ,LED ,resistor 1k ,Transistor 2222A ,Wires ,Cardboard,Soldiers with wire,Favicol,m-seal ,Battery clip connector ,Battery ,Cardboard cutter ,Pen knife cutter,Black insulation tape ,Long Wooden stick ,White paper 
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- PROJECT 19 -->
+<div class="proj-card rv">
+  <div class="proj-img"
+       data-video="https://youtu.be/CKHW1YJ2J1s"
+       data-title="HiddenGuard Smart Locker">
+
+    <img src="./Iot Project Source code/HIDDEN GUARD SMART LOCKER.png"
+         alt="HiddenGuard Smart Locker"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+    <span class="proj-num">PROJECT #19</span>
+
+    <div class="play-wrap">
+      <a href="https://youtu.be/CKHW1YJ2J1s"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      HiddenGuard Smart Locker 🔐 | Ultimate Arduino Security Project
+    </h3>
+
+    <p class="proj-desc">
+      A secure locker that opens only with the correct RFID card or PIN.
+      Features tamper alerts and an activity log — ideal for offices,
+      labs, and personal valuables.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+     CardBord,Rfid card sensor,JumperWire,BreadBoard,Arduino Uno,,Led 12c display
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+  </div>
+</div>
+
+    <!-- PROJECT 20 -->
+<div class="proj-card rv">
+
+     <div class="proj-img"
+       data-video="https://youtu.be/QN3Lomx3LIc"
+       data-title="Smart Blind Stick">
+
+    <img src="./Iot Project Source code/SMART BLIND STICK.png"
+         alt="Smart Blind Stick"
+         class="ph-img"/>
+
+    <div class="ov"></div>
+
+    <span class="proj-num">PROJECT #20</span>
+
+    <!-- Play Button -->
+    <div class="play-wrap">
+      <a href="https://youtu.be/QN3Lomx3LIc"
+         target="_blank"
+         class="play-circle">
+        <i class="fas fa-play"></i>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="proj-body">
+    <h3 class="proj-title">
+      👨‍🦯 AI-Powered Smart Blind Stick | Life-Changing Arduino Project 🔥
+    </h3>
+
+    <p class="proj-desc">
+      Wearable glasses with ultrasonic sensors that detect obstacles and alert
+      the visually impaired user via earphone audio or vibration, enhancing
+      mobility and independence.
+    </p>
+
+    <div class="proj-comp">
+      <span class="comp-lbl">// COMPONENTS:</span>
+     1 Arduino board,2 UltraSonic Sensor 3 .jumperWire 4.buzzer 5. Data Cable 6.glass
+    </div>
+
+    <div class="proj-actions">
+      <a href="./comming soon.html" class="pbtn pbtn-primary">
+        <i class="fas fa-file-pdf"></i> Project Report
+      </a>
+
+      <button class="pbtn pbtn-video open-vid">
+        <i class="fas fa-play-circle"></i> Watch Demo
+      </button>
+    </div>
+
+  </div>
+</div>
+
+      <!-- PROJECT 21 -->
+      <div class="proj-card rv">
+        <div class="proj-img" data-video="" data-title="Electrical Inverter Project">
+          <img src="images/inverter project.png" alt="Electrical Inverter Project"/>
+          <div class="ov"></div>
+          <span class="proj-num">PROJECT #21</span>
+        </div>
+        <div class="proj-body">
+          <h3 class="proj-title">Electrical Inverter Project</h3>
+          <p class="proj-desc">Converts DC to AC current to power small household appliances. A low-cost, efficient inverter essential for power electronics and renewable energy systems.</p>
+          <div class="proj-comp"><span class="comp-lbl">// COMPONENTS:</span>Transformer · Inverter Board · Power Cord</div>
+          <div class="proj-actions">
+            <a href="images/INVERTER PROJECT ELECTICAL.pdf" target="_blank" class="pbtn pbtn-primary"><i class="fas fa-file-pdf"></i> Project Report</a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /proj-grid -->
+  </div>
+</section>
+
+<!-- ══════ VIDEO MODAL ══════ -->
+<div id="vmodal" class="vmodal" role="dialog" aria-modal="true">
+  <div class="vmodal-inner">
+    <div class="vmodal-head">
+      <span class="vmodal-title" id="vtitle">Project Video</span>
+      <button class="vmodal-close" id="vclose" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="vmodal-box" id="vbox"></div>
+  </div>
+</div>
+
+<!-- ══════ NOTICE ══════ -->
+<section id="notice" class="section">
+  <div class="notice-box rv">
+    <div class="notice-head">
+      <div class="notice-icon">⚠️</div>
+      <div>
+        <div class="notice-ttl">IMPORTANT_NOTICE.txt</div>
+        <div class="notice-sub">// Read before placing any order or using hardware</div>
+      </div>
+    </div>
+    <div class="notice-layout">
+      <ul class="notice-list">
+        <li>This project is developed for educational and research purposes. Follow proper electrical safety guidelines.</li>
+        <li>Ensure proper voltage supply before connecting the device to any power source.</li>
+        <li>Do not modify the hardware without appropriate technical knowledge.</li>
+        <li>Data collected through IoT modules should be handled responsibly at all times.</li>
+        <li>We are not responsible for hardware damage caused by improper use or handling.</li>
+        <li>Before COD payment, verify the project is tagged with our official SKMP logo to confirm authenticity and prevent fraud.</li>
+      </ul>
+      <div class="notice-imgs">
+        <img src="images/real1.jpg" alt="SKMP Official Logo Tag"/>
+        <img src="images/real2.jpg" alt="Arduino UNO Board"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ CONTACT ══════ -->
+<section id="contact" class="section">
+  <div class="contact-grid">
+
+    <div class="rvl">
+      <div class="sec-tag">Contact</div>
+      <h2 class="sec-title">Let's Build<br><span>Together</span></h2>
+      <div class="sec-div"></div>
+      <p class="sec-sub">Reach out for project inquiries, academic support, or custom IoT builds.</p>
+      <div class="info-cards">
+        <div class="info-row">
+          <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div><div class="info-lbl">Address</div><div class="info-val">Polishline, Balasore, Odisha, India</div></div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon"><i class="fas fa-envelope"></i></div>
+          <div><div class="info-lbl">Email</div><div class="info-val">skmpcompany@gmail.com</div></div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon"><i class="fas fa-phone"></i></div>
+          <div><div class="info-lbl">Phone</div><div class="info-val">+91-7008608082</div></div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon"><i class="fab fa-whatsapp"></i></div>
+          <div><div class="info-lbl">Helpline (Message Only)</div><div class="info-val">+91-8596048857</div></div>
+        </div>
+        <div class="avail"><span class="pulse"></span> Available: Mon–Sun · 7:00 AM – 10:00 PM IST</div>
+      </div>
+    </div>
+
+    <div class="form-panel rvr">
+      <div class="form-head"><i class="fas fa-terminal"></i> contact_form.submit() — SKMP Portal</div>
+      <div class="form-body">
+        <form action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="feab9ecf-0310-448c-b1e7-a34b83eb1f2c"/>
+          <div class="form-row">
+            <div class="form-grp">
+              <label class="form-lbl">Name</label>
+              <input type="text" name="Name" class="form-in" placeholder="Your name" required/>
+            </div>
+            <div class="form-grp">
+              <label class="form-lbl">Email</label>
+              <input type="email" name="Email id" class="form-in" placeholder="email@example.com" required/>
+            </div>
+          </div>
+          <div class="form-grp">
+            <label class="form-lbl">Phone <small style="color:var(--dim);font-size:.62rem">(with country code)</small></label>
+            <input type="text" name="Phone Number" class="form-in" placeholder="+91 98765 43210" required/>
+          </div>
+          <div class="form-grp">
+            <label class="form-lbl">Message</label>
+            <textarea name="Message from Skmp Project Management Department" class="form-ta" placeholder="Describe your project idea..." required></textarea>
+          </div>
+          <p class="form-note"><span>NOTE:</span> Our helpline is available 24hr (message only). Online support: 7AM – 10PM daily.</p>
+          <button type="submit" class="submit"><i class="fas fa-paper-plane"></i> SEND MESSAGE</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<footer>
+  <div class="footer-in">
+    <div class="footer-logo">
+      <img src="SKMP_PROJECT_MANAGEMENT_LOGO-.png" alt="SKMP Logo"/>
+      <span class="footer-brand">SKMP PROJECT MANAGEMENT</span>
+    </div>
+    <div class="footer-links">
+      <a href="All Legal Condition/termandcondition.html">Terms & Conditions</a>
+      <a href="All Legal Condition/privacy.html">Privacy Policy</a>
+    </div>
+    <div class="footer-soc">
+      <a href="https://www.facebook.com/manjulata.mohanty.10" target="_blank"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://x.com/suzen43282" target="_blank"><i class="fab fa-twitter"></i></a>
+      <a href="https://www.youtube.com/@SKMPPROJECTMANAGEMENT" target="_blank"><i class="fab fa-youtube"></i></a>
+      <a href="https://www.linkedin.com/in/suzen-kumar-mohanty-4064b824a/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+      <a href="https://www.instagram.com/suzen_mohanty_world/" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://wa.me/+918596048857" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://github.com/suzenkumar" target="_blank"><i class="fab fa-github"></i></a>
+    </div>
+    <div class="footer-copy">
+      © 2026 SKMP PROJECT MANAGEMENT. All rights reserved with ♥ by
+      <a href="https://suzen-kumar-mohanty-8fdv.vercel.app/" target="_blank">Er. Suzen Kumar Mohanty</a>.
+    </div>
+  </div>
+</footer>
+
+<!-- ══════ SCRIPTS ══════ -->
+<script>
+/* PCB Canvas */
+const cv = document.getElementById('pcb');
+const cx = cv.getContext('2d');
+function resizePCB(){cv.width=innerWidth;cv.height=innerHeight;}
+resizePCB();
+window.addEventListener('resize',()=>{resizePCB();drawPCB();});
+function drawPCB(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  const W=cv.width, H=cv.height;
+  const cols=Math.ceil(W/60), rows=Math.ceil(H/60);
+  cx.fillStyle='rgba(0,168,255,.35)';
+  for(let c=0;c<=cols;c++) for(let r=0;r<=rows;r++){cx.beginPath();cx.arc(c*60,r*60,1,0,Math.PI*2);cx.fill();}
+  const traces=[
+    {x1:0,y1:120,x2:W*.62,y2:120,c:'rgba(0,255,212,.22)'},
+    {x1:W*.3,y1:300,x2:W,y2:300,c:'rgba(0,255,212,.18)'},
+    {x1:0,y1:480,x2:W*.5,y2:480,c:'rgba(0,168,255,.2)'},
+    {x1:W*.4,y1:600,x2:W,y2:600,c:'rgba(0,255,212,.15)'},
+    {x1:W*.22,y1:0,x2:W*.22,y2:H*.55,c:'rgba(0,168,255,.18)'},
+    {x1:W*.5,y1:H*.28,x2:W*.5,y2:H,c:'rgba(0,168,255,.15)'},
+    {x1:W*.76,y1:0,x2:W*.76,y2:H*.42,c:'rgba(0,255,212,.18)'},
+  ];
+  traces.forEach(t=>{
+    cx.beginPath(); cx.moveTo(t.x1,t.y1); cx.lineTo(t.x2,t.y2);
+    cx.strokeStyle=t.c; cx.lineWidth=1; cx.stroke();
+  });
+  [[W*.22,120],[W*.5,300],[W*.76,480],[W*.4,600]].forEach(([x,y])=>{
+    cx.beginPath();cx.arc(x,y,5,0,Math.PI*2);cx.strokeStyle='rgba(0,255,212,.38)';cx.lineWidth=1.5;cx.stroke();
+    cx.beginPath();cx.arc(x,y,2,0,Math.PI*2);cx.fillStyle='rgba(0,255,212,.48)';cx.fill();
+  });
+}
+drawPCB();
+
+/* Mobile menu */
+function toggleMenu(){
+  document.getElementById('ham').classList.toggle('open');
+  document.getElementById('mob').classList.toggle('open');
+}
+function closeMenu(){
+  document.getElementById('ham').classList.remove('open');
+  document.getElementById('mob').classList.remove('open');
+}
+
+/* Scroll reveal */
+const revEls = document.querySelectorAll('.rv,.rvl,.rvr');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); });
+},{threshold:.1});
+revEls.forEach(e=>obs.observe(e));
+
+/* ── YouTube ID extractor (handles youtu.be, watch?v=, embed/, ?si= params) ── */
+function getYtId(url){
+  if(!url) return null;
+  const m = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/
+  );
+  return m ? m[1] : null;
+}
+
+/* Video Modal */
+const modal  = document.getElementById('vmodal');
+const vbox   = document.getElementById('vbox');
+const vtitle = document.getElementById('vtitle');
+const vclose = document.getElementById('vclose');
+
+function openModal(src, title){
+  vtitle.textContent = title || 'Project Video';
+  vbox.innerHTML = '';
+  const ytId = getYtId(src);
+  if(ytId){
+    const f = document.createElement('iframe');
+    f.src = 'https://www.youtube.com/embed/'+ytId+'?autoplay=1&rel=0';
+    f.allow = 'autoplay; fullscreen';
+    f.allowFullscreen = true;
+    vbox.appendChild(f);
+  } else if(src && src.trim()){
+    const v = document.createElement('video');
+    v.src = src; v.controls = true; v.autoplay = true; v.playsInline = true;
+    vbox.appendChild(v);
+  } else {
+    vbox.innerHTML = '<div class="no-video-inner"><i class="fas fa-video-slash"></i><p>No demo video available yet for this project.</p></div>';
+  }
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(){
+  modal.classList.remove('open');
+  vbox.innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+/* Attach click events to all project image wraps */
+document.querySelectorAll('.proj-img').forEach(wrap=>{
+  wrap.addEventListener('click', ()=> openModal(wrap.dataset.video, wrap.dataset.title));
+  wrap.style.cursor = 'pointer';
+});
+
+/* "Watch Demo" buttons */
+document.querySelectorAll('.open-vid').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const wrap = btn.closest('.proj-card').querySelector('.proj-img');
+    openModal(wrap.dataset.video, wrap.dataset.title);
+  });
+});
+
+vclose.addEventListener('click', closeModal);
+modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+</script>
 
 </body>
-
-
 </html>
